@@ -38,7 +38,7 @@ CREATE TABLE film_genre (
 
 CREATE TABLE film_week_popularity (
 	filmId VARCHAR(10) NOT NULL,
-    weekNr INT NOt NULL,
+    weekNr VARCHAR(10) NOt NULL,
     popularity DOUBLE,
     revenue DOUBLE,
     voteAvg DOUBLE,
@@ -71,7 +71,7 @@ CREATE TABLE series_genre (
 
 CREATE TABLE series_week_popularity (
 	seriesId VARCHAR(10) NOT NULL,
-    weekNr INT NOT NULL,
+    weekNr VARCHAR(10) NOT NULL,
     popularity DOUBLE,
     voteAvg DOUBLE,
     voteCount INT,
@@ -92,7 +92,7 @@ CREATE TABLE person (
 
 CREATE TABLE Film_Week_Person (
 	filmId VARCHAR(10) NOT NULL,
-    weekNr INT NOt NULL,
+    weekNr VARCHAR(10) NOt NULL,
     personId VARCHAR(10) NOT NULL,
     popularity DOUBLE,
     revenue DOUBLE,

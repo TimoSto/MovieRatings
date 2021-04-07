@@ -39,7 +39,7 @@ CREATE TABLE MovieWeekPopularity (
 	movieId VARCHAR(10) NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
     popularity DOUBLE,
-    revenue DOUBLE,
+    revenue VARCHAR(50),
     voteAvg DOUBLE,
     voteCount INT,
     FOREIGN KEY (movieId) REFERENCES Movies(id),

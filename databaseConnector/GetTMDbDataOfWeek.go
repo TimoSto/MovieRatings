@@ -69,7 +69,7 @@ func main() {
 
 	UpdateFilmTable(trends)
 
-	//WriteTrendsToSQL(trends)
+	WriteTrendsToSQL(trends)
 
 	//fmt.Println("Reading Config...")
 	//
@@ -185,7 +185,7 @@ func UpdateFilmTable(trends []TMDbMovie) {
 			fmt.Println(movie.ID)
 			CreateMovieEntry(movie.ID, db)
 		case nil:
-			fmt.Println(id)
+			fmt.Println("Movie already exists")
 		default:
 			panic(err)
 		}
@@ -196,7 +196,7 @@ func CreateMovieEntry(id int, db *sql.DB) {
 	//db, err := sql.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
 	//defer db.Close()
 	//1. Daten zum Film über HTTP aus TMDb-API ermitteln
-	fmt.Println("create",id)
+	fmt.Println("Create Movie Entry for ID ",id)
 	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/movie/%v?api_key=b97e33a6b0c4283466ad23df952ebd6a", id))
 	if err != nil {
 		panic(err)
@@ -211,18 +211,43 @@ func CreateMovieEntry(id int, db *sql.DB) {
 		panic(err)
 	}
 	movie.Title = strings.Replace(movie.Title,"'","\\'",-1)
-	fmt.Println(movie.ID, movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Count, movie.Vote_Average, movie.Revenue, movie.Genres)
-	fmt.Println(len(movie.Overview))
 	movie.Overview = strings.Replace(movie.Overview,"'","\\'",-1)
-	fmt.Println(len(movie.Title))
 	//2. Eintrag für Film in SQL-DB hinzufügen
 	sql := fmt.Sprintf("INSERT INTO Movies(id, title, overview, popularity, releaseDate, posterPath, voteCount, voteAvg, revenue) VALUES(%v,'%v','%v',%v,'%v','%v',%v, %v,'%v')",movie.ID, movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Average, movie.Vote_Count, movie.Revenue)
+	_, err = db.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//3. SQL-Befehl in SQL-Datei schreiben, um die Daten auch woanders füllen zu können
+	WriteSQLToFile(sql)
+	//4. Genres ggf ergänzen
+	for _,genre := range movie.Genres {
+		CheckIfGenreExists(genre, db)
+	}
+}
+
+func CheckIfGenreExists(genre Genre, db *sql.DB) {
+	sqlstr := fmt.Sprintf("SELECT id FROM Genres WHERE id=%v", genre.ID)
+	row := db.QueryRow(sqlstr)
+	var found_id int
+	switch err := row.Scan(&found_id); err {
+	case sql.ErrNoRows:
+		CreateGenreEntry(genre, db)
+	case nil:
+		fmt.Println("Genre "+genre.Name+" already exists")
+	default:
+		panic(err)
+	}
+}
+
+func CreateGenreEntry(genre Genre, db *sql.DB) {
+	fmt.Println("Create Genre-Entry for Genre "+genre.Name+"...")
+	sql := fmt.Sprintf("INSERT INTO Genres(id, genre) VALUES (%v,'%v')", genre.ID, genre.Name)
 	res, err := db.Exec(sql)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(res)
-	//3. SQL-Befehl in SQL-Datei schreiben, um die Daten auch woanders füllen zu können
 	WriteSQLToFile(sql)
 }
 
@@ -233,7 +258,7 @@ func WriteTrendsToSQL(trends []TMDbMovie) {
 		panic(err)
 	}
 	for _, movie := range trends {
-		sql := fmt.Sprintf("INSERT INTO film_week_popularity(filmId, weekNr, popularity, revenue, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v, %v)",movie.ID, 1, movie.Popularity, movie.Revenue, movie.Vote_Average, movie.Vote_Count)
+		sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, revenue, voteAVG, voteCount) VALUES ('%v', %v, %v, '%v', %v, %v)",movie.ID, 1, movie.Popularity, movie.Revenue, movie.Vote_Average, movie.Vote_Count)
 		res, err := db.Exec(sql)
 		if err != nil {
 			panic(err)
@@ -249,7 +274,7 @@ func WriteSQLToFile(sql string){
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString(sql+"\n"); err != nil {
+	if _, err := f.WriteString(sql+";\n"); err != nil {
 		log.Println(err)
 	}
 }

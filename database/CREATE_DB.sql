@@ -1,53 +1,52 @@
 USE movieratings;
 
-DROP TABLE IF EXISTS film_week_person;
-DROP TABLE IF EXISTS person;
-DROP TABLE IF EXISTS series_week_popularity;
-DROP TABLE IF EXISTS film_Week_popularity;
-DROP TABLE IF EXISTS series_Genre;
-DROP TABLE IF EXISTS film_genre;
-DROP TABLE IF EXISTS genre;
-DROP TABLE IF EXISTS series;
-DROP TABLE IF EXISTS film;
+DROP TABLE IF EXISTS MovieWeekPerson;
+DROP TABLE IF EXISTS Personen;
+DROP TABLE IF EXISTS SeriesWeekPopularity;
+DROP TABLE IF EXISTS MovieWeekPopularity;
+DROP TABLE IF EXISTS SeriesGenre;
+DROP TABLE IF EXISTS MovieGenre;
+DROP TABLE IF EXISTS Genres;
+DROP TABLE IF EXISTS Series;
+DROP TABLE IF EXISTS Movies;
 
-CREATE TABLE film (
+CREATE TABLE Movies (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
-    title VARCHAR(50),
-    overview VARCHAR(50),
+    title VARCHAR(100),
+    overview VARCHAR(1000),
     popularity DOUBLE,
-    revenue DOUBLE,
+    revenue VARCHAR(50),
     posterPath VARCHAR(50),
-    release_date DATE,
+    releaseDate VARCHAR(10),
     voteAvg DOUBLE,
-    voteCount INT,
-    inProduction BOOLEAN
+    voteCount INT
 );
 
-CREATE TABLE genre (
+CREATE TABLE Genres (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
     genre VARCHAR(50)
 );
 
-CREATE TABLE film_genre (
-	filmId VARCHAR(10) NOT NULL,
+CREATE TABLE MovieGenre (
+	movieId VARCHAR(10) NOT NULL,
     genreId VARCHAR(10) NOT NULL,
-    PRIMARY KEY (filmId, genreId),
-    FOREIGN KEY (filmId) REFERENCES film(id),
-    FOREIGN KEY (genreId) REFERENCES genre(id)
+    PRIMARY KEY (movieId, genreId),
+    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    FOREIGN KEY (genreId) REFERENCES Genres(id)
 );
 
-CREATE TABLE film_week_popularity (
-	filmId VARCHAR(10) NOT NULL,
+CREATE TABLE MovieWeekPopularity (
+	movieId VARCHAR(10) NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
     popularity DOUBLE,
     revenue DOUBLE,
     voteAvg DOUBLE,
     voteCount INT,
-    FOREIGN KEY (filmId) REFERENCES film(id),
-    PRIMARY KEY (filmId, weekNr)
+    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    PRIMARY KEY (movieId, weekNr)
 );
 
-CREATE TABLE series (
+CREATE TABLE Series (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
     title VARCHAR(50),
     overview VARCHAR(50),
@@ -55,31 +54,30 @@ CREATE TABLE series (
     seasons INT,
     episodes INT,
     posterPath VARCHAR(50),
-    release_date DATE,
+    releaseDate VARCHAR(10),
     voteAvg DOUBLE,
-    voteCount INT,
-    inProduction BOOLEAN
+    voteCount INT
 );
 
-CREATE TABLE series_genre (
+CREATE TABLE SeriesGenre (
 	seriesId VARCHAR(10) NOT NULL,
     genreId VARCHAR(10) NOT NULL,
     PRIMARY KEY (seriesId, genreId),
-    FOREIGN KEY (seriesId) REFERENCES series(id),
-    FOREIGN KEY (genreId) REFERENCES genre(id)
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
+    FOREIGN KEY (genreId) REFERENCES Genres(id)
 );
 
-CREATE TABLE series_week_popularity (
+CREATE TABLE SeriesWeekPopularity (
 	seriesId VARCHAR(10) NOT NULL,
     weekNr VARCHAR(10) NOT NULL,
     popularity DOUBLE,
     voteAvg DOUBLE,
     voteCount INT,
-    FOREIGN KEY (seriesId) REFERENCES series(id),
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
     PRIMARY KEY (seriesId, weekNr)
 );
 
-CREATE TABLE person (
+CREATE TABLE Personen (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
     name VARCHAR(50),
     birthday DATE,
@@ -90,15 +88,15 @@ CREATE TABLE person (
     profession VARCHAR(25)
 );
 
-CREATE TABLE Film_Week_Person (
-	filmId VARCHAR(10) NOT NULL,
+CREATE TABLE MovieWeekPerson (
+	movieId VARCHAR(10) NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
     personId VARCHAR(10) NOT NULL,
     popularity DOUBLE,
     revenue DOUBLE,
     voteAvg DOUBLE,
     voteCount INT,
-    FOREIGN KEY (filmId) REFERENCES film(id),
-    FOREIGN KEY (personId) REFERENCES person(id),
-    PRIMARY KEY (filmId, weekNr, personId)
+    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    FOREIGN KEY (personId) REFERENCES Personen(id),
+    PRIMARY KEY (movieId, weekNr, personId)
 );

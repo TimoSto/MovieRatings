@@ -1,0 +1,17 @@
+{
+  "name": "MovieRatings",
+  "version": "1.0.0",
+  "description": "Compare MovieRatings and -Trends to Corona",
+  "main": "index.js",
+  "repository": "https://github.com/TimoSto/MovieRatings.git",
+  "contributors": [
+    "Timo Stovermann <t.stovermann@gmail.com>",
+    "Vanessa Kriebel", "Paul Schäfer",
+    "Julia Gröniger",
+    "Bastian Wynk"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "fetchWeeklyDataFromTMDb": "go run ./databaseConnector/GetTMDbDataOfWeek.go testparam"
+  }
+}

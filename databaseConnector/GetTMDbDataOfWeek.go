@@ -150,6 +150,7 @@ func GetTrendingPage(n int) []TMDbMovie{
 		panic(err)
 	}
 	res, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(res))
 	if err != nil {
 		panic(err)
 	}
@@ -238,11 +239,11 @@ func CheckIfGenreExists(genre Genre, db *sql.DB) {
 func CreateGenreEntry(genre Genre, db *sql.DB) {
 	fmt.Println("Create Genre-Entry for Genre "+genre.Name+"...")
 	sql := fmt.Sprintf("INSERT INTO Genres(id, genre) VALUES (%v,'%v')", genre.ID, genre.Name)
-	res, err := db.Exec(sql)
+	_, err := db.Exec(sql)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(res)
+	//fmt.Println(res)
 	WriteSQLToFile(sql)
 }
 
@@ -253,12 +254,12 @@ func WriteTrendsToSQL(trends []TMDbMovie) {
 		panic(err)
 	}
 	for _, movie := range trends {
-		sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, revenue, voteAVG, voteCount) VALUES ('%v', %v, %v, '%v', %v, %v)",movie.ID, 1, movie.Popularity, movie.Revenue, movie.Vote_Average, movie.Vote_Count)
-		res, err := db.Exec(sql)
+		sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, 1, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
+		_, err := db.Exec(sql)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(res)
+		//fmt.Println(res)
 	}
 }
 

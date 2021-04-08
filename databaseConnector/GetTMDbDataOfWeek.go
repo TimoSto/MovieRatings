@@ -176,7 +176,6 @@ func GetTrendingPage(typ string, n int) []TMDbMovie{
 		panic(err)
 	}
 	res, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(res))
 	if err != nil {
 		panic(err)
 	}
@@ -266,7 +265,7 @@ func UpdateSeriesTable(trends []TMDbMovie) {
 		case sql.ErrNoRows:
 			CreateTVEntry(series.ID, db)
 		case nil:
-			fmt.Println("Movie already exists")
+			fmt.Println("Series already exists")
 		default:
 			panic(err)
 		}

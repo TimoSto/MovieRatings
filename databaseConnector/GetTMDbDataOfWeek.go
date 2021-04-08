@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	. "./config"
 	"os"
 	"strings"
 )
@@ -61,8 +60,6 @@ type TrendRes struct {
 }
 
 var db *sql.DB
-
-var config Config
 
 func main() {
 	trends := GetTop100TrendingMovies()

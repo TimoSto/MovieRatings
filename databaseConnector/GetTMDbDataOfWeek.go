@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type Movie struct {
@@ -61,7 +62,13 @@ type TrendRes struct {
 
 var db *sql.DB
 
+var weekNr int
+
 func main() {
+	tn := time.Now().UTC()
+	fmt.Println(tn)
+	_, weekNr = tn.ISOWeek()
+
 	trends := GetTop100TrendingMovies()
 
 	UpdateFilmTable(trends)
@@ -260,7 +267,7 @@ func WriteTrendsToSQL(trends []TMDbMovie) {
 }
 
 func CheckIfTrendEntryExist(trend TMDbMovie, db *sql.DB) {
-	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieWeekPopularity WHERE movieid=%v AND weekNr=1", trend.ID)
+	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieWeekPopularity WHERE movieid=%v AND weekNr=%v", trend.ID, weekNr)
 	row := db.QueryRow(sqlstr)
 	var found_id int
 	switch err := row.Scan(&found_id); err {
@@ -275,7 +282,7 @@ func CheckIfTrendEntryExist(trend TMDbMovie, db *sql.DB) {
 }
 
 func WriteTrendToSQL(movie TMDbMovie, db *sql.DB) {
-	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, 1, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
+	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, weekNr, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
 	_, err := db.Exec(sql)
 	if err != nil {
 		panic(err)

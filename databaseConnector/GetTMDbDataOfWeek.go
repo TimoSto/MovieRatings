@@ -96,13 +96,13 @@ func main() {
 
 	trends := GetTop100Trending("movie")
 
-	UpdateFilmTable(trends)
+	ExtendOrUpdateFilmTable(trends)
 
 	WriteMovieTrendsToSQL(trends)
 
 	trends = GetTop100Trending("tv")
 
-	UpdateSeriesTable(trends)
+	ExtendOrUpdateSeriesTable(trends)
 
 	WriteTVTrendsToSQL(trends)
 
@@ -230,7 +230,7 @@ func GetTrendingPage(typ string, n int) []TMDbMovie{
 	return trendingResultSet.Results
 }
 
-func UpdateFilmTable(trends []TMDbMovie) {
+func ExtendOrUpdateFilmTable(trends []TMDbMovie) {
 	//Neue Filme hinzufügen, damit der F-Key in der Week-Trend-Tabelle existiert
 	for _, movie := range trends {
 		if movie.ID == 0 {
@@ -324,7 +324,7 @@ func UpdateMovieEntry(id int) {
 	}
 }
 
-func UpdateSeriesTable(trends []TMDbMovie) {
+func ExtendOrUpdateSeriesTable(trends []TMDbMovie) {
 	for _, series := range trends {
 		if series.ID == 0 {
 			continue
@@ -337,6 +337,7 @@ func UpdateSeriesTable(trends []TMDbMovie) {
 			CreateTVEntry(series.ID)
 		case nil:
 			fmt.Println("Series already exists")
+			UpdateTVEntry(series.ID)
 		default:
 			panic(err)
 		}
@@ -376,6 +377,44 @@ func CreateTVEntry(id int) {
 		CheckIfGenreExists(genre)
 		CreateSeriesGenreEntry(series.ID, genre.ID)
 	}
+}
+
+func UpdateTVEntry(id int) {
+	//db, err := sqlstr.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
+	//defer db.Close()
+	//1. Daten zum Film über HTTP aus TMDb-API ermitteln
+	fmt.Println("Ceck for updates for Movie Entry with ID ",id)
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/series/%v?api_key=b97e33a6b0c4283466ad23df952ebd6a", id))
+	if err != nil {
+		panic(err)
+	}
+	var series TMDbSeries
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(body,&series)
+	if err != nil {
+		panic(err)
+	}
+	//movie.Title = strings.Replace(movie.Title,"'","\\'",-1)
+	//movie.Overview = strings.Replace(movie.Overview,"'","\\'",-1)
+	////2. Daten zum Movie aus der DB ziehen
+	//sqlmovie := GetSQLMovie(id)
+	////2. Eintrag für Film in SQL-DB aktualisieren, wenn sich etwas geändert hat
+	//different := sqlmovie.VoteAVG.Float64 != movie.Vote_Average ||
+	//	sqlmovie.VoteCount.Int64 != int64(movie.Vote_Count) ||
+	//	sqlmovie.Popularity.Float64 != movie.Popularity ||
+	//	strings.Compare(fmt.Sprintf("%f",convertExponentialStringToFloat(sqlmovie.Revenue.String)),fmt.Sprintf("%f",movie.Revenue)) != 0
+	//if different {
+	//	fmt.Println("Update Movie Entry for ID ", movie.ID)
+	//	sqlstr := fmt.Sprintf("UPDATE Movies SET voteAvg=%v, voteCount=%v, popularity=%v, revenue='%v' WHERE id=%v",movie.Vote_Average, movie.Vote_Count, movie.Popularity, movie.Revenue, movie.ID)
+	//	_, err = db.Exec(sqlstr)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	WriteSQLToFile(sqlstr)
+	//}
 }
 
 func CheckIfGenreExists(genre Genre) {

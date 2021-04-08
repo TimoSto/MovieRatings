@@ -226,6 +226,7 @@ func CreateMovieEntry(id int, db *sql.DB) {
 	//4. Genres ggf ergänzen
 	for _,genre := range movie.Genres {
 		CheckIfGenreExists(genre, db)
+		CreateMovieGenreEntry(movie.ID, genre.ID, db)
 	}
 }
 
@@ -252,6 +253,26 @@ func CreateGenreEntry(genre Genre, db *sql.DB) {
 	}
 	//fmt.Println(res)
 	WriteSQLToFile(sql)
+}
+
+func CreateMovieGenreEntry(movieID int, genreID int, db *sql.DB) {
+	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieGenre WHERE movieid=%v AND genreID=%v", movieID, genreID)
+	row := db.QueryRow(sqlstr)
+	var found_id int
+	switch err := row.Scan(&found_id); err {
+	case sql.ErrNoRows:
+		sql := fmt.Sprintf("INSERT INTO MovieGenre(movieId, genreId) VALUES (%v,%v)",movieID, genreID)
+		_, err := db.Exec(sql)
+		if err != nil {
+			panic(err)
+		}
+		//fmt.Println(res)
+		WriteSQLToFile(sql)
+	case nil:
+
+	default:
+		panic(err)
+	}
 }
 
 func WriteTrendsToSQL(trends []TMDbMovie) {

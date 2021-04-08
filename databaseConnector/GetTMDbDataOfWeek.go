@@ -178,8 +178,6 @@ func UpdateFilmTable(trends []TMDbMovie) {
 		var id int
 		switch err := row.Scan(&id); err {
 		case sql.ErrNoRows:
-			fmt.Println("No rows were returned!")
-			fmt.Println(movie.ID)
 			CreateMovieEntry(movie.ID, db)
 		case nil:
 			fmt.Println("Movie already exists")
@@ -271,6 +269,7 @@ func WriteSQLToFile(sql string){
 		log.Println(err)
 	}
 	defer f.Close()
+	//sql = strings.Replace(sql,"'","\\'",-1)
 	if _, err := f.WriteString(sql+";\n"); err != nil {
 		log.Println(err)
 	}

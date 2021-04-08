@@ -4,7 +4,7 @@ ENV GOOS=windows
 
 ENV GOARCH=amd64
 
-ADD . ./databaseConnector
+ADD ./databaseConnector ./databaseConnector
 
 WORKDIR ./databaseConnector
 

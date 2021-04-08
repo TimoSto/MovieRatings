@@ -254,14 +254,34 @@ func WriteTrendsToSQL(trends []TMDbMovie) {
 		panic(err)
 	}
 	for _, movie := range trends {
-		sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, 1, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
-		_, err := db.Exec(sql)
-		if err != nil {
-			panic(err)
-		}
-		//fmt.Println(res)
-		WriteSQLToFile(sql)
+
+		CheckIfTrendEntryExist(movie, db)
 	}
+}
+
+func CheckIfTrendEntryExist(trend TMDbMovie, db *sql.DB) {
+	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieWeekPopularity WHERE movieid=%v AND weekNr=1", trend.ID)
+	row := db.QueryRow(sqlstr)
+	var found_id int
+	switch err := row.Scan(&found_id); err {
+	case sql.ErrNoRows:
+		fmt.Println("Create MovieWeekPopularity-Entry")
+		WriteTrendToSQL(trend, db)
+	case nil:
+		fmt.Println("Trend-Entry already exists")
+	default:
+		panic(err)
+	}
+}
+
+func WriteTrendToSQL(movie TMDbMovie, db *sql.DB) {
+	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, 1, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
+	_, err := db.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Println(res)
+	WriteSQLToFile(sql)
 }
 
 func WriteSQLToFile(sql string){

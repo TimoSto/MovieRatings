@@ -260,6 +260,7 @@ func WriteTrendsToSQL(trends []TMDbMovie) {
 			panic(err)
 		}
 		//fmt.Println(res)
+		WriteSQLToFile(sql)
 	}
 }
 

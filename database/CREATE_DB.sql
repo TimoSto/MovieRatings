@@ -39,7 +39,6 @@ CREATE TABLE MovieWeekPopularity (
 	movieId VARCHAR(10) NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
     popularity DOUBLE,
-    revenue VARCHAR(50),
     voteAvg DOUBLE,
     voteCount INT,
     FOREIGN KEY (movieId) REFERENCES Movies(id),
@@ -48,8 +47,8 @@ CREATE TABLE MovieWeekPopularity (
 
 CREATE TABLE Series (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
-    title VARCHAR(50),
-    overview VARCHAR(50),
+    title VARCHAR(100),
+    overview VARCHAR(1000),
     popularity DOUBLE,
     seasons INT,
     episodes INT,

@@ -27,6 +27,19 @@ type Movie struct {
 	VoteCount    sql.NullInt64   `json:VoteCount`
 }
 
+type Series struct {
+	ID           int         `json:id`
+	Title        sql.NullString  `json:title`
+	Overview     sql.NullString  `json:overview`
+	Popularity   sql.NullFloat64 `json:popularity`
+	Seasons      sql.NullInt64 `json:seasons`
+	Episodes     sql.NullInt64 `json:episodes`
+	Poster       sql.NullString  `json:posterPath`
+	ReleaseDate  sql.NullString  `json:release_date`
+	VoteAVG      sql.NullFloat64 `json:voteAvg`
+	VoteCount    sql.NullInt64   `json:VoteCount`
+}
+
 type TMDbMovie struct {
 	ID           int     `json:id`
 	Title        string  `json:title`
@@ -90,9 +103,9 @@ func main() {
 		panic(err)
 	}
 
-	//movie := GetSQLMovie(11)
+	//movie := GetSQLSeries(104699)
 	//
-	//fmt.Println(movie.Title)
+	//fmt.Println(movie.ID)
 
 	trends := GetTop100Trending("movie")
 
@@ -176,30 +189,24 @@ func GetSQLMovie(mid int) Movie{
 
 	sqlstr := fmt.Sprintf("SELECT * FROM Movies WHERE id=%v", mid)
 	row := db.QueryRow(sqlstr)
-	var id int
-	var title string
-	var overview string
-	var popularity float64
-	var revenue string
-	var posterPath string
-	var releaseDate string
-	var voteAvg float64
-	var voteCount int
-	err := row.Scan(&id, &title, &overview, &popularity,&revenue,&posterPath,&releaseDate,&voteAvg,&voteCount)
+	var movie Movie
+	err := row.Scan(&movie.ID, &movie.Title, &movie.Overview, &movie.Popularity,&movie.Revenue,&movie.Poster,&movie.ReleaseDate,&movie.VoteAVG,&movie.VoteCount)
 	if err != nil {
 		panic(err)
 	}
-	return Movie{
-		id,
-		sql.NullString{title, true},
-		sql.NullString{overview, true},
-		sql.NullFloat64{popularity, true},
-		sql.NullString{revenue, true},
-		sql.NullString{posterPath, true},
-		sql.NullString{releaseDate, true},
-		sql.NullFloat64{voteAvg, true},
-		sql.NullInt64{int64(voteCount), true},
+	return movie
+}
+
+func GetSQLSeries(mid int) Series{
+
+	sqlstr := fmt.Sprintf("SELECT * FROM Series WHERE id=%v", mid)
+	row := db.QueryRow(sqlstr)
+	var series Series
+	err := row.Scan(&series.ID, &series.Title, &series.Overview, &series.Popularity,&series.Seasons,&series.Episodes,&series.Poster,&series.ReleaseDate,&series.VoteAVG,&series.VoteCount)
+	if err != nil {
+		panic(err)
 	}
+	return series
 }
 
 func GetTop100Trending(typ string) []TMDbMovie {
@@ -231,6 +238,7 @@ func GetTrendingPage(typ string, n int) []TMDbMovie{
 }
 
 func ExtendOrUpdateFilmTable(trends []TMDbMovie) {
+	fmt.Println("Check for changes in movies and extend or update database accordingly...")
 	//Neue Filme hinzufügen, damit der F-Key in der Week-Trend-Tabelle existiert
 	for _, movie := range trends {
 		if movie.ID == 0 {
@@ -243,7 +251,6 @@ func ExtendOrUpdateFilmTable(trends []TMDbMovie) {
 		case sql.ErrNoRows:
 			CreateMovieEntry(movie.ID)
 		case nil:
-			fmt.Println("Movie already exists")
 			UpdateMovieEntry(movie.ID)
 		default:
 			panic(err)
@@ -290,7 +297,6 @@ func UpdateMovieEntry(id int) {
 	//db, err := sqlstr.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
 	//defer db.Close()
 	//1. Daten zum Film über HTTP aus TMDb-API ermitteln
-	fmt.Println("Ceck for updates for Movie Entry with ID ",id)
 	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/movie/%v?api_key=b97e33a6b0c4283466ad23df952ebd6a", id))
 	if err != nil {
 		panic(err)
@@ -325,6 +331,7 @@ func UpdateMovieEntry(id int) {
 }
 
 func ExtendOrUpdateSeriesTable(trends []TMDbMovie) {
+	fmt.Println("Check for changes in series and extend or update database accordingly...")
 	for _, series := range trends {
 		if series.ID == 0 {
 			continue
@@ -336,7 +343,6 @@ func ExtendOrUpdateSeriesTable(trends []TMDbMovie) {
 		case sql.ErrNoRows:
 			CreateTVEntry(series.ID)
 		case nil:
-			fmt.Println("Series already exists")
 			UpdateTVEntry(series.ID)
 		default:
 			panic(err)
@@ -365,7 +371,7 @@ func CreateTVEntry(id int) {
 	series.Title = strings.Replace(series.Title,"'","\\'",-1)
 	series.Overview = strings.Replace(series.Overview,"'","\\'",-1)
 	//2. Eintrag für Film in SQL-DB hinzufügen
-	sqlstr := fmt.Sprintf("INSERT INTO Series(id, title, overview, popularity, seasons, releaseDate, posterPath, voteCount, voteAvg) VALUES(%v,'%v','%v',%v,%v,'%v','%v', %v, %v)",series.ID, series.Title, series.Overview, series.Popularity, len(series.Seasons), series.First_air_date, series.Poster_Path, series.Vote_Average, series.Vote_Count)
+	sqlstr := fmt.Sprintf("INSERT INTO Series(id, title, overview, popularity, seasons, releaseDate, posterPath, voteCount, voteAvg) VALUES(%v,'%v','%v',%v,%v,'%v','%v', %v, %v)",series.ID, series.Title, series.Overview, series.Popularity, len(series.Seasons), series.First_air_date, series.Poster_Path, series.Vote_Count, series.Vote_Average)
 	_, err = db.Exec(sqlstr)
 	if err != nil {
 		panic(err)
@@ -383,8 +389,7 @@ func UpdateTVEntry(id int) {
 	//db, err := sqlstr.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
 	//defer db.Close()
 	//1. Daten zum Film über HTTP aus TMDb-API ermitteln
-	fmt.Println("Ceck for updates for Movie Entry with ID ",id)
-	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/series/%v?api_key=b97e33a6b0c4283466ad23df952ebd6a", id))
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/tv/%v?api_key=b97e33a6b0c4283466ad23df952ebd6a", id))
 	if err != nil {
 		panic(err)
 	}
@@ -397,24 +402,24 @@ func UpdateTVEntry(id int) {
 	if err != nil {
 		panic(err)
 	}
-	//movie.Title = strings.Replace(movie.Title,"'","\\'",-1)
-	//movie.Overview = strings.Replace(movie.Overview,"'","\\'",-1)
+	series.Title = strings.Replace(series.Title,"'","\\'",-1)
+	series.Overview = strings.Replace(series.Overview,"'","\\'",-1)
 	////2. Daten zum Movie aus der DB ziehen
-	//sqlmovie := GetSQLMovie(id)
+	sqlseries := GetSQLSeries(id)
 	////2. Eintrag für Film in SQL-DB aktualisieren, wenn sich etwas geändert hat
-	//different := sqlmovie.VoteAVG.Float64 != movie.Vote_Average ||
-	//	sqlmovie.VoteCount.Int64 != int64(movie.Vote_Count) ||
-	//	sqlmovie.Popularity.Float64 != movie.Popularity ||
-	//	strings.Compare(fmt.Sprintf("%f",convertExponentialStringToFloat(sqlmovie.Revenue.String)),fmt.Sprintf("%f",movie.Revenue)) != 0
-	//if different {
-	//	fmt.Println("Update Movie Entry for ID ", movie.ID)
-	//	sqlstr := fmt.Sprintf("UPDATE Movies SET voteAvg=%v, voteCount=%v, popularity=%v, revenue='%v' WHERE id=%v",movie.Vote_Average, movie.Vote_Count, movie.Popularity, movie.Revenue, movie.ID)
-	//	_, err = db.Exec(sqlstr)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	WriteSQLToFile(sqlstr)
-	//}
+	different := sqlseries.VoteAVG.Float64 != series.Vote_Average ||
+		sqlseries.VoteCount.Int64 != int64(series.Vote_Count) ||
+		sqlseries.Popularity.Float64 != series.Popularity ||
+		int64(len(series.Seasons)) != sqlseries.Seasons.Int64
+	if different {
+		fmt.Println("Update Series Entry for ID ", series.ID)
+		sqlstr := fmt.Sprintf("UPDATE Movies SET voteAvg=%v, voteCount=%v, popularity=%v, seasons=%v WHERE id=%v",series.Vote_Average, series.Vote_Count, series.Popularity, len(series.Seasons), series.ID)
+		_, err = db.Exec(sqlstr)
+		if err != nil {
+			panic(err)
+		}
+		WriteSQLToFile(sqlstr)
+	}
 }
 
 func CheckIfGenreExists(genre Genre) {
@@ -425,7 +430,7 @@ func CheckIfGenreExists(genre Genre) {
 	case sql.ErrNoRows:
 		CreateGenreEntry(genre)
 	case nil:
-		fmt.Println("Genre "+genre.Name+" already exists")
+
 	default:
 		panic(err)
 	}
@@ -482,7 +487,20 @@ func CreateSeriesGenreEntry(seriesID int, genreID int) {
 	}
 }
 
+//func WriteMovieTrendsToSQL(trends []TMDbMovie) {
+//	db, err := sql.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
+//	defer db.Close()
+//	if err != nil {
+//		panic(err)
+//	}
+//	for _, movie := range trends {
+//
+//		CheckIfMovieTrendEntryExist(movie)
+//	}
+//}
+
 func WriteMovieTrendsToSQL(trends []TMDbMovie) {
+	fmt.Println("Write Movie-Trends to database...")
 	db, err := sql.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
 	defer db.Close()
 	if err != nil {
@@ -503,13 +521,14 @@ func CheckIfMovieTrendEntryExist(trend TMDbMovie) {
 		fmt.Println("Create MovieWeekPopularity-Entry")
 		WriteMovieTrendToSQL(trend)
 	case nil:
-		fmt.Println("Trend-Entry already exists")
+
 	default:
 		panic(err)
 	}
 }
 
 func WriteMovieTrendToSQL(movie TMDbMovie) {
+	fmt.Println("Write Movie-Trends to database...")
 	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, weekNr, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
 	_, err := db.Exec(sql)
 	if err != nil {
@@ -520,6 +539,7 @@ func WriteMovieTrendToSQL(movie TMDbMovie) {
 }
 
 func WriteTVTrendsToSQL(trends []TMDbMovie) {
+	fmt.Println("Write Series-Trends to database...")
 	db, err := sql.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
 	defer db.Close()
 	if err != nil {
@@ -540,7 +560,7 @@ func CheckIfTVTrendEntryExist(trend TMDbMovie) {
 		fmt.Println("Create TVWeekPopularity-Entry")
 		WriteTVTrendToSQL(trend)
 	case nil:
-		fmt.Println("Trend-Entry already exists", trend.ID)
+
 	default:
 		panic(err)
 	}

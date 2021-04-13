@@ -17,13 +17,13 @@ DROP TABLE IF EXISTS Countries;
 
 CREATE TABLE Countries (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
-    cname VARCHAR(20)
+    cname VARCHAR(35)
 );
 
 CREATE TABLE Networks (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
     nname VARCHAR(20),
-    logo VARCHAR(30),
+    logo VARCHAR(50),
     originCountry VARCHAR(10),
     FOREIGN KEY (originCountry) REFERENCES Countries(id)
 );
@@ -81,11 +81,11 @@ CREATE TABLE Series (
     seasons INT,
     episodes INT,
     posterPath VARCHAR(50),
-    releaseDate VARCHAR(10),
     voteAvg DOUBLE,
     voteCount INT,
     firstAir VARCHAR(10),
-    lastAir VARCHAR(10)
+    lastAir VARCHAR(10),
+    tagline VARCHAR(75)
 );
 
 CREATE TABLE SeriesGenre (
@@ -97,18 +97,18 @@ CREATE TABLE SeriesGenre (
 );
 
 CREATE TABLE SeriesCountry (
-	movieId VARCHAR(10) NOT NULL,
+	seriesId VARCHAR(10) NOT NULL,
     countryId VARCHAR(10) NOT NULL,
-    PRIMARY KEY (movieId, countryId),
-    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    PRIMARY KEY (seriesId, countryId),
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
     FOREIGN KEY (countryId) REFERENCES Countries(id)
 );
 
 CREATE TABLE SeriesNetwork (
-	movieId VARCHAR(10) NOT NULL,
+	seriesId VARCHAR(10) NOT NULL,
     networkId VARCHAR(10) NOT NULL,
-    PRIMARY KEY (movieId, networkId),
-    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    PRIMARY KEY (seriesId, networkId),
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
     FOREIGN KEY (networkId) REFERENCES Networks(id)
 );
 

@@ -42,7 +42,7 @@ type Series struct {
 	Vote_Count           float64   `json:vote_count`
 	Genres               []Genre   `json:genres`
 	In_Production        bool      `json:in_production`
-	Network              []Network `json:networks`
+	Networks             []Network `json:networks`
 	Production_countries []Country `json:production_countires`
 }
 

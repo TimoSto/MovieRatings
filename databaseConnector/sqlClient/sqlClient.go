@@ -5,6 +5,7 @@ import (
 	"dbconn.com/apiClient"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -30,8 +31,15 @@ func WriteSQLToFile(sqlstr string){
 	}
 	defer f.Close()
 	//sqlstr = strings.Replace(sqlstr,"'","\\'",-1)
-	if _, err := f.WriteString(sqlstr +";\n"); err != nil {
+	fc, err := ioutil.ReadFile("../database/FILLDB.sql")
+	if err != nil {
 		panic(err)
+	}
+	index := strings.Index(string(fc), sqlstr)
+	if index == -1 {
+		if _, err := f.WriteString(sqlstr +";\n"); err != nil {
+			panic(err)
+		}
 	}
 }
 

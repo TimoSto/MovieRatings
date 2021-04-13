@@ -44,7 +44,7 @@ type Series struct {
 }
 
 type Country struct {
-	ID sql.NullInt64 `json:id`
+	ID sql.NullString `json:id`
 	CName sql.NullString `json:cname`
 }
 
@@ -106,6 +106,12 @@ func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 		}
 		client.CreateMovieGenreEntry(movie.ID, genre.ID)
 	}
+	for _,country := range movie.Production_countries {
+		if client.GetCountryByID(country.ISO_3166_1).ID.Valid == false {
+			client.CreateCountryEntry(country)
+		}
+		client.CreateMovieCountryEntry(movie.ID, country.ISO_3166_1)
+	}
 }
 
 func(client *SQLClient)CreateGenreEntry(genre apiClient.Genre) {
@@ -137,6 +143,37 @@ func(client *SQLClient)GetGenreByID(id int) Genre{
 		panic(err)
 	}
 	return genre
+}
+
+func(client *SQLClient)GetCountryByID(id string) Country{
+	sqlstr := fmt.Sprintf("SELECT * FROM Countries WHERE id='%v'", id)
+	row := client.DB.QueryRow(sqlstr)
+	var country Country
+	err := row.Scan(&country.ID, &country.CName)
+	if err != nil && err != sql.ErrNoRows {
+		panic(err)
+	}
+	return country
+}
+
+func(client *SQLClient)CreateCountryEntry(country apiClient.Country) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create CountryEntry "+country.Name)
+	sqlstr := fmt.Sprintf("INSERT INTO Countries(id, cname) VALUES('%v','%v')",country.ISO_3166_1, country.Name)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateMovieCountryEntry(movie int, country string) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieCountryEntry ")
+	sqlstr := fmt.Sprintf("INSERT INTO MovieCountry(movieId, countryId) VALUES(%v,'%v')",movie, country)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func(client *SQLClient)GetMovieByID(id int) Movie{
@@ -216,12 +253,48 @@ func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 		}
 		client.CreateSeriesGenreEntry(series.ID, genre.ID)
 	}
+	for _,country := range series.Production_countries {
+		if client.GetCountryByID(country.ISO_3166_1).ID.Valid == false {
+			client.CreateCountryEntry(country)
+		}
+		client.CreateSeriesCountryEntry(series.ID, country.ISO_3166_1)
+	}
+	for _,network := range series.Networks {
+		if client.GetNetworkByID(network.ID).ID.Valid == false {
+			client.CreateNetworkEntry(network)
+		}
+		client.CreateSeriesNetworkEntry(series.ID, network)
+	}
 }
 
 func(client *SQLClient)CreateSeriesGenreEntry(series int, genre int) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create SeriesGenreEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO SeriesGenre(seriesId, genreId) VALUES(%v,'%v')", series, genre)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)GetNetworkByID(id int) Network{
+	sqlstr := fmt.Sprintf("SELECT * FROM Networks WHERE id=%v", id)
+	row := client.DB.QueryRow(sqlstr)
+	var network Network
+	err := row.Scan(&network.ID, &network.NName, &network.Logo, &network.OriginCountry)
+	if err != nil && err != sql.ErrNoRows{
+		panic(err)
+	}
+	return network
+}
+
+func(client *SQLClient)CreateNetworkEntry(network apiClient.Network) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create Networks-Entry ", network.ID)
+	if client.GetCountryByID(network.Origin_country).ID.Valid == false {
+		client.CreateCountryEntry(apiClient.Country{network.Origin_country, ""})
+	}
+	sqlstr := fmt.Sprintf("INSERT INTO Networks(id, nname, logo, originCountry) VALUES('%v','%v', '%v', '%v')", network.ID, network.Name, network.Logo_Path, network.Origin_country)
 	_, err := client.DB.Exec(sqlstr)
 	if err != nil {
 		panic(err)
@@ -264,5 +337,29 @@ func(client *SQLClient)UpdateSeriesEntry(series apiClient.Series) {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func(client *SQLClient)CreateSeriesCountryEntry(series int, country string) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create SeriesCountryEntry ")
+	sqlstr := fmt.Sprintf("INSERT INTO SeriesCountry(seriesId, countryId) VALUES(%v,'%v')", series, country)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateSeriesNetworkEntry(series int, network apiClient.Network) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create SeriesNetworkEntry ")
+	if client.GetNetworkByID(network.ID).ID.Valid == false {
+		client.CreateNetworkEntry(network)
+	}
+	sqlstr := fmt.Sprintf("INSERT INTO SeriesNetwork(seriesId, networkId) VALUES(%v,'%v')", series, network.ID)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		fmt.Println(network)
+		panic(err)
 	}
 }

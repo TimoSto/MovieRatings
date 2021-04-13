@@ -5,12 +5,34 @@ import (
 	"dbconn.com/apiClient"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"os"
 	"strconv"
 	"strings"
 )
 
 type SQLClient struct {
 	DB *sql.DB
+}
+
+func(client *SQLClient)Exec(sqlstr string) (sql.Result,error) {
+	res, err := client.DB.Exec(sqlstr)
+	if err == nil {
+		WriteSQLToFile(sqlstr)
+	}
+	return res, err
+}
+
+func WriteSQLToFile(sqlstr string){
+	f, err := os.OpenFile("../database/FILLDB.sql",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	//sqlstr = strings.Replace(sqlstr,"'","\\'",-1)
+	if _, err := f.WriteString(sqlstr +";\n"); err != nil {
+		panic(err)
+	}
 }
 
 type Movie struct {
@@ -96,7 +118,7 @@ func(client *SQLClient)ExtendOrUpdateMovieTable(movies []apiClient.Movie) {
 func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	sqlstr := fmt.Sprintf("INSERT INTO Movies(id, title, overview, popularity, releaseDate, posterPath, voteCount, voteAvg, revenue, runtime, tagline) VALUES(%v,'%v','%v',%v,'%v','%v',%v, %v,'%v', %v, '%v')",movie.ID, movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Count, movie.Vote_Average, movie.Revenue, movie.Runtime, movie.Tagline)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -118,7 +140,7 @@ func(client *SQLClient)CreateGenreEntry(genre apiClient.Genre) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create GenreEntry "+genre.Name)
 	sqlstr := fmt.Sprintf("INSERT INTO Genres(id, genre) VALUES(%v,'%v')",genre.ID, genre.Name)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -128,7 +150,7 @@ func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create MovieGenreEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO MovieGenre(movieId, genreId) VALUES(%v,'%v')",movie, genre)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -160,7 +182,7 @@ func(client *SQLClient)CreateCountryEntry(country apiClient.Country) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create CountryEntry "+country.Name)
 	sqlstr := fmt.Sprintf("INSERT INTO Countries(id, cname) VALUES('%v','%v')",country.ISO_3166_1, country.Name)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -170,7 +192,7 @@ func(client *SQLClient)CreateMovieCountryEntry(movie int, country string) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create MovieCountryEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO MovieCountry(movieId, countryId) VALUES(%v,'%v')",movie, country)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -210,7 +232,7 @@ func(client *SQLClient)UpdateMovieEntry(movie apiClient.Movie) {
 	if different {
 		fmt.Println("Update movie with id ",movie.ID)
 		sqlstr := fmt.Sprintf("Update Movies SET title='%v', overview='%v', popularity=%v, releaseDate='%v', posterPath='%v', voteCount=%v, voteAvg=%v, revenue=%v, runtime=%v, tagline='%v' WHERE id=%v", movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Count, movie.Vote_Average, movie.Revenue, movie.Runtime, movie.Tagline, movie.ID)
-		_, err := client.DB.Exec(sqlstr)
+		_, err := client.Exec(sqlstr)
 		if err != nil {
 			panic(err)
 		}
@@ -243,7 +265,7 @@ func(client *SQLClient)ExtendOrUpdateTVTable(series []apiClient.Series) {
 func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	sqlstr := fmt.Sprintf("INSERT INTO Series(id, title, overview, popularity, seasons, episodes, posterPath, voteCount, voteAvg, firstAir, lastAir, tagline) VALUES(%v,'%v','%v',%v,%v,%v,'%v',%v, %v,'%v', '%v', '%v')", series.ID, series.Name, series.Overview, series.Popularity, series.Number_of_seasons, series.Number_of_episodes, series.Poster_Path, series.Vote_Count, series.Vote_Average, series.First_air_date, series.Last_air_date, series.Tagline)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -271,7 +293,7 @@ func(client *SQLClient)CreateSeriesGenreEntry(series int, genre int) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create SeriesGenreEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO SeriesGenre(seriesId, genreId) VALUES(%v,'%v')", series, genre)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -295,7 +317,7 @@ func(client *SQLClient)CreateNetworkEntry(network apiClient.Network) {
 		client.CreateCountryEntry(apiClient.Country{network.Origin_country, ""})
 	}
 	sqlstr := fmt.Sprintf("INSERT INTO Networks(id, nname, logo, originCountry) VALUES('%v','%v', '%v', '%v')", network.ID, network.Name, network.Logo_Path, network.Origin_country)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -333,7 +355,7 @@ func(client *SQLClient)UpdateSeriesEntry(series apiClient.Series) {
 	if different {
 		fmt.Println("Update series with id ", series.ID)
 		sqlstr := fmt.Sprintf("Update Series SET title='%v', overview='%v', popularity=%v, seasons=%v, episodes=%v, posterPath='%v', voteCount=%v, voteAvg=%v, firstAir='%v', lastAir='%v', tagline='%v' WHERE id=%v", series.Name, series.Overview, series.Popularity, series.Number_of_seasons, series.Number_of_episodes, series.Poster_Path, series.Vote_Count, series.Vote_Average, series.First_air_date, series.Last_air_date, series.Tagline, series.ID)
-		_, err := client.DB.Exec(sqlstr)
+		_, err := client.Exec(sqlstr)
 		if err != nil {
 			panic(err)
 		}
@@ -344,7 +366,7 @@ func(client *SQLClient)CreateSeriesCountryEntry(series int, country string) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create SeriesCountryEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO SeriesCountry(seriesId, countryId) VALUES(%v,'%v')", series, country)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
 	}
@@ -357,7 +379,7 @@ func(client *SQLClient)CreateSeriesNetworkEntry(series int, network apiClient.Ne
 		client.CreateNetworkEntry(network)
 	}
 	sqlstr := fmt.Sprintf("INSERT INTO SeriesNetwork(seriesId, networkId) VALUES(%v,'%v')", series, network.ID)
-	_, err := client.DB.Exec(sqlstr)
+	_, err := client.Exec(sqlstr)
 	if err != nil {
 		fmt.Println(network)
 		panic(err)

@@ -10,4 +10,4 @@ WORKDIR ./databaseConnector
 
 RUN go mod tidy
 
-RUN go build GetTMDbDataOfWeek.go
+RUN go build SaveTrendsOfWeek.go

@@ -1,4 +1,5 @@
 docker build -f databaseConnector/Dockerfile -t gotmdbsql .
 docker create -ti --name dummy gotmdbsql bash
-docker cp dummy:/go/databaseConnector/GetTMDbDataOfWeek.exe ./GetTMDbDataOfWeek.exe
+mkdir out
+docker cp dummy:/go/databaseConnector/SaveTrendsOfWeek.exe ./out/SaveTrendsOfWeek.exe
 docker rm -f dummy

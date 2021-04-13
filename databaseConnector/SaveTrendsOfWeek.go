@@ -3,6 +3,8 @@ package main
 import (
 	TMDb "dbconn.com/apiClient"
 	MySQL "dbconn.com/sqlClient"
+	"fmt"
+	"time"
 )
 
 var apiClient TMDb.APIClient
@@ -17,6 +19,10 @@ func main() {
 	sqlClient = MySQL.SQLClient{}
 	sqlClient.EstablishConnectionToDB()
 
+	tn := time.Now().UTC()
+	fmt.Println(tn)
+	_, weekNr := tn.ISOWeek()
+
 	movieTrends := apiClient.GetMovieTrends()
 
 	//Die Movie-Objekte müssen anhand der ID aus den Trends nochmal einzeln bestimmt werden, da nicht alle Infos in den Trends drinstehen
@@ -24,11 +30,15 @@ func main() {
 
 	sqlClient.ExtendOrUpdateMovieTable(movies)
 
+	sqlClient.WriteMovieTrendsToSQL(movieTrends, weekNr)
+
 	tvTrends := apiClient.GetTVTrends()
 
 	series := apiClient.GetSeries(tvTrends)
 
 	sqlClient.ExtendOrUpdateTVTable(series)
+
+	sqlClient.WriteTVTrendsToSQL(tvTrends, weekNr)
 
 	defer sqlClient.DB.Close()
 }

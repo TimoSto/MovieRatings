@@ -385,3 +385,69 @@ func(client *SQLClient)CreateSeriesNetworkEntry(series int, network apiClient.Ne
 		panic(err)
 	}
 }
+
+func(client *SQLClient) WriteMovieTrendsToSQL(trends []apiClient.Movie, week int) {
+	fmt.Println("Write Movie-Trends to database...")
+	for _, movie := range trends {
+
+		client.CheckIfMovieTrendEntryExist(movie, week)
+	}
+}
+
+func(client *SQLClient) CheckIfMovieTrendEntryExist(trend apiClient.Movie, weekNr int) {
+	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieWeekPopularity WHERE movieid=%v AND weekNr=%v", trend.ID, weekNr)
+	row := client.DB.QueryRow(sqlstr)
+	var found_id int
+	switch err := row.Scan(&found_id); err {
+	case sql.ErrNoRows:
+		fmt.Println("Create MovieWeekPopularity-Entry")
+		client.WriteMovieTrendToSQL(trend, weekNr)
+	case nil:
+
+	default:
+		panic(err)
+	}
+}
+
+func(client *SQLClient) WriteMovieTrendToSQL(movie apiClient.Movie, weekNr int) {
+	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, weekNr, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
+	_, err := client.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Println(res)
+	WriteSQLToFile(sql)
+}
+
+func(client *SQLClient) WriteTVTrendsToSQL(trends []apiClient.Series, week int) {
+	fmt.Println("Write Movie-Trends to database...")
+	for _, movie := range trends {
+
+		client.CheckIfTVTrendEntryExist(movie, week)
+	}
+}
+
+func(client *SQLClient) CheckIfTVTrendEntryExist(trend apiClient.Series, weekNr int) {
+	sqlstr := fmt.Sprintf("SELECT seriesid FROM SeriesWeekPopularity WHERE seriesid=%v AND weekNr=%v", trend.ID, weekNr)
+	row := client.DB.QueryRow(sqlstr)
+	var found_id int
+	switch err := row.Scan(&found_id); err {
+	case sql.ErrNoRows:
+		fmt.Println("Create TVWeekPopularity-Entry")
+		client.WriteTVTrendToSQL(trend, weekNr)
+	case nil:
+
+	default:
+		panic(err)
+	}
+}
+
+func(client *SQLClient) WriteTVTrendToSQL(series apiClient.Series, weekNr int) {
+	sql := fmt.Sprintf("INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)", series.ID, weekNr, series.Popularity, series.Vote_Average, series.Vote_Count)
+	_, err := client.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Println(res)
+	WriteSQLToFile(sql)
+}

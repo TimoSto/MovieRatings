@@ -1,6 +1,9 @@
 USE movieratings;
 
+DROP TABLE IF EXISTS MovieCredits;
+DROP TABLE IF EXISTS SeriesCredits;
 DROP TABLE IF EXISTS MovieWeekPerson;
+DROP TABLE IF EXISTS PersonWeek;
 DROP TABLE IF EXISTS Personen;
 DROP TABLE IF EXISTS SeriesWeekPopularity;
 DROP TABLE IF EXISTS MovieWeekPopularity;
@@ -22,7 +25,7 @@ CREATE TABLE Countries (
 
 CREATE TABLE Networks (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
-    nname VARCHAR(20),
+    nname VARCHAR(50),
     logo VARCHAR(50),
     originCountry VARCHAR(10),
     FOREIGN KEY (originCountry) REFERENCES Countries(id)
@@ -85,7 +88,7 @@ CREATE TABLE Series (
     voteCount INT,
     firstAir VARCHAR(10),
     lastAir VARCHAR(10),
-    tagline VARCHAR(75)
+    tagline VARCHAR(100)
 );
 
 CREATE TABLE SeriesGenre (
@@ -125,12 +128,19 @@ CREATE TABLE SeriesWeekPopularity (
 CREATE TABLE Personen (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,
     name VARCHAR(50),
-    birthday DATE,
-    deathday DATE,
+    birthday VARCHAR(10),
+    deathday VARCHAR(10),
     popularity DOUBLE,
     profilePath VARCHAR(50),
     gender INT,
     profession VARCHAR(25)
+);
+
+CREATE TABLE PersonWeek (
+	personId VARCHAR(10) NOT NULL,
+    weekNr int NOT NULL,
+    PRIMARY KEY (personId, weekNr),
+    FOREIGN KEY (personID) REFERENCES Personen(id)
 );
 
 CREATE TABLE MovieWeekPerson (
@@ -144,4 +154,22 @@ CREATE TABLE MovieWeekPerson (
     FOREIGN KEY (movieId) REFERENCES Movies(id),
     FOREIGN KEY (personId) REFERENCES Personen(id),
     PRIMARY KEY (movieId, weekNr, personId)
+);
+
+CREATE TABLE MovieCredits (
+	movieId VARCHAR(10) NOT NULL,
+    personId VARCHAR(10) NOT NULL,
+    job varchar(120) NOT NULL,
+    PRIMARY KEY (movieId, personId, job),
+    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    FOREIGN KEY (personId) REFERENCES Personen(id)
+);
+
+CREATE TABLE SeriesCredits (
+	seriesId VARCHAR(10) NOT NULL,
+    personId VARCHAR(10) NOT NULL,
+    job varchar(120) NOT NULL,
+    PRIMARY KEY (seriesId, personId, job),
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
+    FOREIGN KEY (personId) REFERENCES Personen(id)
 );

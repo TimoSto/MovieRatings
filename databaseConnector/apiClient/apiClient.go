@@ -25,6 +25,8 @@ type Movie struct {
 	Runtime              int       `json:runtime`
 	Tagline              string    `json:tagline`
 	Production_countries []Country `json:production_countires`
+	Cast                 []Person
+	Crew                 []Person
 }
 
 type Series struct {
@@ -44,6 +46,28 @@ type Series struct {
 	In_Production        bool      `json:in_production`
 	Networks             []Network `json:networks`
 	Production_countries []Country `json:production_countires`
+	Cast                 []Person
+	Crew                 []Person
+}
+
+type Person struct {
+	ID                   int     `json:id`
+	Name                 string  `json:name`
+	Birthday             string  `json:birthday`
+	Deathday             string  `json:deathday`
+	Known_for_department string  `json:known_for_department`
+	Gender               int     `json:gender`
+	Biography            string  `json:biography`
+	Popularity           float64 `json:popularity`
+	Profile_path         string  `json:profile_path`
+	Job string `json:job`
+	Character string `json:character`
+}
+
+type CreditsForMovieOrTV struct {
+	ID int `json:id`
+	Cast []Person `json:cast`
+	Crew []Person `json:crew`
 }
 
 type Genre struct {
@@ -73,6 +97,11 @@ type TrendResultTV struct {
 	Results       []Series `json:results`
 }
 
+type TrendResultPerson struct {
+	Page          int `json:page`
+	Results       []Person `json:results`
+}
+
 func(client *APIClient)GetMovieTrends() []Movie{
 	fmt.Println("Retrieve movie-trend-information from TMDb-API...")
 	var movies []Movie
@@ -83,7 +112,7 @@ func(client *APIClient)GetMovieTrends() []Movie{
 }
 
 func(client *APIClient)GetMovieTrendPage(n int) []Movie{
-	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/trending/movie/week?api_key=%v&page=%v", client.APIKey, n))
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/movie/popular?api_key=%v&page=%v", client.APIKey, n))
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +152,28 @@ func(client *APIClient)GetMovieByID(id int) Movie {
 	if err != nil {
 		panic(err)
 	}
+
+	credits := client.GetCreditsForMovie(movie.ID)
+	movie.Crew = credits.Crew
+	movie.Cast = credits.Cast
 	return movie
+}
+
+func(client *APIClient)GetCreditsForMovie(id int) CreditsForMovieOrTV {
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/movie/%v/credits?api_key=%v", id, client.APIKey))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var credits CreditsForMovieOrTV
+	err = json.Unmarshal(res, &credits)
+	if err != nil {
+		panic(err)
+	}
+	return credits
 }
 
 
@@ -137,7 +187,7 @@ func(client *APIClient)GetTVTrends() []Series{
 }
 
 func(client *APIClient)GetTVTrendPage(n int) []Series{
-	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/trending/tv/week?api_key=%v&page=%v", client.APIKey, n))
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/tv/popular?api_key=%v&page=%v", client.APIKey, n))
 	if err != nil {
 		panic(err)
 	}
@@ -177,5 +227,78 @@ func(client *APIClient)GetSeriesByID(id int) Series {
 	if err != nil {
 		panic(err)
 	}
+
+	credits := client.GetCreditsForTV(series.ID)
+	series.Cast = credits.Cast
+	series.Crew = credits.Crew
 	return series
+}
+
+func(client *APIClient)GetCreditsForTV(id int) CreditsForMovieOrTV {
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/tv/%v/credits?api_key=%v", id, client.APIKey))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var credits CreditsForMovieOrTV
+	err = json.Unmarshal(res, &credits)
+	if err != nil {
+		panic(err)
+	}
+	return credits
+}
+
+func(client *APIClient)GetPersonTrends() []Person{
+	var persons []Person
+	for i:=1 ; i <=5 ; i++ {
+		persons = append(persons, client.GetPersonTrendPage(i)...)
+	}
+	return persons
+}
+
+func(client *APIClient)GetPersonTrendPage(n int) []Person{
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/person/popular?api_key=%v&page=%v", client.APIKey, n))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var trendingResultSet TrendResultPerson
+	err = json.Unmarshal(res,&trendingResultSet)
+	if err != nil {
+		panic(err)
+	}
+
+	return trendingResultSet.Results
+}
+
+func(client *APIClient)GetPersons(trends []Person) []Person {
+	var persons []Person
+	for _, trend := range trends {
+		persons = append(persons, client.GetPersonByID(trend.ID))
+	}
+	return persons
+}
+
+func(client *APIClient)GetPersonByID(id int) Person {
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/person/%v?api_key=%v", id, client.APIKey))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var person Person
+	err = json.Unmarshal(res, &person)
+	if err != nil {
+		panic(err)
+	}
+
+	return person
 }

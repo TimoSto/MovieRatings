@@ -71,6 +71,17 @@ type Series struct {
 	Tagline     sql.NullString  `json:tagline`
 }
 
+type Person struct {
+	ID sql.NullInt64 `json:id`
+	Name sql.NullString `json:name`
+	Birthday sql.NullString `json:birthday`
+	Deathday sql.NullString `json:deathday`
+	Popularity sql.NullFloat64 `json:popularity`
+	ProfilePath sql.NullString `json:profilePath`
+	Gender sql.NullInt64 `json:gender`
+	Profession sql.NullString `json:profession`
+}
+
 type Country struct {
 	ID sql.NullString `json:id`
 	CName sql.NullString `json:cname`

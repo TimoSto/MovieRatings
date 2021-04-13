@@ -55,6 +55,24 @@ func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 		}
 		client.CreateSeriesNetworkEntry(series.ID, network)
 	}
+	for i,person := range series.Cast {
+		if i > 5 {
+			break
+		}
+		if client.GetPersonByID(person.ID).ID.Valid == false {
+			client.CreatePersonEntry(person)
+		}
+		client.CreateTVPersonEntry(series.ID, person.ID, "Actor")
+	}
+	for i,person := range series.Crew {
+		if i > 5 {
+			break
+		}
+		if client.GetPersonByID(person.ID).ID.Valid == false {
+			client.CreatePersonEntry(person)
+		}
+		client.CreateTVPersonEntry(series.ID, person.ID, person.Job)
+	}
 }
 
 func(client *SQLClient)CreateSeriesGenreEntry(series int, genre int) {
@@ -130,6 +148,17 @@ func(client *SQLClient)CreateSeriesNetworkEntry(series int, network apiClient.Ne
 	}
 }
 
+func(client *SQLClient)CreateTVPersonEntry(series int, person int, job string) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieCountryEntry ")
+	job = strings.Replace(job, "'", "\\'", -1)
+	sqlstr := fmt.Sprintf("INSERT INTO SeriesCredits(seriesId, personId, job) VALUES(%v,%v,'%v')", series, person, job)
+	_, err := client.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func(client *SQLClient) WriteTVTrendsToSQL(trends []apiClient.Series, week int) {
 	fmt.Println("Write Movie-Trends to database...")
 	for _, movie := range trends {
@@ -160,5 +189,5 @@ func(client *SQLClient) WriteTVTrendToSQL(series apiClient.Series, weekNr int) {
 		panic(err)
 	}
 	//fmt.Println(res)
-	WriteSQLToFile(sql)
+	//WriteSQLToFile(sql)
 }

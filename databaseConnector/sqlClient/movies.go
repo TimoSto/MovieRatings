@@ -50,11 +50,28 @@ func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 		}
 		client.CreateMovieCountryEntry(movie.ID, country.ISO_3166_1)
 	}
+	for i,person := range movie.Cast {
+		if i > 5 {
+			break
+		}
+		if client.GetPersonByID(person.ID).ID.Valid == false {
+			client.CreatePersonEntry(person)
+		}
+		client.CreateMoviePersonEntry(movie.ID, person.ID, "Actor_"+person.Character)
+	}
+	for i,person := range movie.Crew {
+		if i > 5 {
+			break
+		}
+		if client.GetPersonByID(person.ID).ID.Valid == false {
+			client.CreatePersonEntry(person)
+		}
+		client.CreateMoviePersonEntry(movie.ID, person.ID, person.Job)
+	}
 }
 
 func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
 	//Eintrag für Film in SQL-DB hinzufügen
-	fmt.Println("Create MovieGenreEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO MovieGenre(movieId, genreId) VALUES(%v,'%v')",movie, genre)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -64,8 +81,17 @@ func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
 
 func(client *SQLClient)CreateMovieCountryEntry(movie int, country string) {
 	//Eintrag für Film in SQL-DB hinzufügen
-	fmt.Println("Create MovieCountryEntry ")
 	sqlstr := fmt.Sprintf("INSERT INTO MovieCountry(movieId, countryId) VALUES(%v,'%v')",movie, country)
+	_, err := client.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateMoviePersonEntry(movie int, person int, job string) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	job = strings.Replace(job, "'", "\\'", -1)
+	sqlstr := fmt.Sprintf("INSERT INTO MovieCredits(movieId, personId, job) VALUES(%v,%v,'%v')",movie, person, job)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)

@@ -40,5 +40,13 @@ func main() {
 
 	sqlClient.WriteTVTrendsToSQL(tvTrends, weekNr)
 
+	personTrends := apiClient.GetPersonTrends()
+
+	persons := apiClient.GetPersons(personTrends)
+
+	sqlClient.ExtendOrUpdatePersonTable(persons)
+
+	sqlClient.WritePersonTrendsToSQL(personTrends, weekNr)
+
 	defer sqlClient.DB.Close()
 }

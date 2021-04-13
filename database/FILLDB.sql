@@ -1610,3 +1610,10 @@ INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCoun
 INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('19885', 15, 54.298, 8.4, 2894);
 INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('87093', 15, 23.975, 8.7, 30);
 INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('87093', 15, 23.975, 8.7, 30);
+INSERT INTO Series(id, title, overview, popularity, seasons, episodes, posterPath, voteCount, voteAvg, firstAir, lastAir, tagline) VALUES(1403,'Marvel\'s Agents of S.H.I.E.L.D.','Agent Phil Coulson of S.H.I.E.L.D. (Strategic Homeland Intervention, Enforcement and Logistics Division) puts together a team of agents to investigate the new, the strange and the unknown around the globe, protecting the ordinary from the extraordinary.',147.009,7,136,'/gHUCCMy1vvj58tzE3dZqeC9SXus.jpg',2468, 7.4,'2013-09-24', '2020-08-12', 'Not all heroes are super.');
+INSERT INTO SeriesGenre(seriesId, genreId) VALUES(1403,'18');
+INSERT INTO SeriesGenre(seriesId, genreId) VALUES(1403,'10765');
+INSERT INTO SeriesGenre(seriesId, genreId) VALUES(1403,'10759');
+INSERT INTO SeriesCountry(seriesId, countryId) VALUES(1403,'US');
+INSERT INTO SeriesNetwork(seriesId, networkId) VALUES(1403,'2');
+INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('1403', 15, 147.009, 7.4, 2467);

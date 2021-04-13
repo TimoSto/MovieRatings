@@ -17,14 +17,12 @@ func main() {
 	sqlClient = MySQL.SQLClient{}
 	sqlClient.EstablishConnectionToDB()
 
-	//movieTrends := apiClient.GetMovieTrends()
-	//for _,trend := range movieTrends {
-	//	fmt.Println(trend.ID)
-	//}
-	////Die Movie-Objekte müssen anhand der ID aus den Trends nochmal einzeln bestimmt werden, da nicht alle Infos in den Trends drinstehen
-	//movies := apiClient.GetMovies(movieTrends)
-	//
-	//sqlClient.ExtendOrUpdateMovieTable(movies)
+	movieTrends := apiClient.GetMovieTrends()
+
+	//Die Movie-Objekte müssen anhand der ID aus den Trends nochmal einzeln bestimmt werden, da nicht alle Infos in den Trends drinstehen
+	movies := apiClient.GetMovies(movieTrends)
+
+	sqlClient.ExtendOrUpdateMovieTable(movies)
 
 	tvTrends := apiClient.GetTVTrends()
 

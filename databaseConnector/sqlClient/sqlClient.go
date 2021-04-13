@@ -55,6 +55,12 @@ type Network struct {
 	OriginCountry sql.NullString `json:originCountry`
 }
 
+type Genre struct {
+	ID sql.NullInt64 `json:id`
+	Genre sql.NullString `json:genre`
+
+}
+
 func(client *SQLClient)EstablishConnectionToDB() {
 	fmt.Println("Trying to connect to to mySQL-DB...")
 	var err error
@@ -94,6 +100,43 @@ func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 	if err != nil {
 		panic(err)
 	}
+	for _,genre := range movie.Genres {
+		if client.GetGenreByID(genre.ID).ID.Valid == false {
+			client.CreateGenreEntry(genre)
+		}
+		client.CreateMovieGenreEntry(movie.ID, genre.ID)
+	}
+}
+
+func(client *SQLClient)CreateGenreEntry(genre apiClient.Genre) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create GenreEntry "+genre.Name)
+	sqlstr := fmt.Sprintf("INSERT INTO Genres(id, genre) VALUES(%v,'%v')",genre.ID, genre.Name)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieGenreEntry ")
+	sqlstr := fmt.Sprintf("INSERT INTO MovieGenre(movieId, genreId) VALUES(%v,'%v')",movie, genre)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)GetGenreByID(id int) Genre{
+	sqlstr := fmt.Sprintf("SELECT * FROM Genres WHERE id=%v", id)
+	row := client.DB.QueryRow(sqlstr)
+	var genre Genre
+	err := row.Scan(&genre.ID, &genre.Genre)
+	if err != nil && err != sql.ErrNoRows {
+		panic(err)
+	}
+	return genre
 }
 
 func(client *SQLClient)GetMovieByID(id int) Movie{
@@ -167,6 +210,22 @@ func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 	if err != nil {
 		panic(err)
 	}
+	for _,genre := range series.Genres {
+		if client.GetGenreByID(genre.ID).ID.Valid == false {
+			client.CreateGenreEntry(genre)
+		}
+		client.CreateSeriesGenreEntry(series.ID, genre.ID)
+	}
+}
+
+func(client *SQLClient)CreateSeriesGenreEntry(series int, genre int) {
+	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create SeriesGenreEntry ")
+	sqlstr := fmt.Sprintf("INSERT INTO SeriesGenre(seriesId, genreId) VALUES(%v,'%v')", series, genre)
+	_, err := client.DB.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func(client *SQLClient)GetSeriesByID(id int) Series{
@@ -199,7 +258,7 @@ func(client *SQLClient)UpdateSeriesEntry(series apiClient.Series) {
 
 	//Eintrag für Film in SQL-DB hinzufügen
 	if different {
-		fmt.Println("Update series with id ", series.ID, sqlmovie.LastAir.String, series.Last_air_date)
+		fmt.Println("Update series with id ", series.ID)
 		sqlstr := fmt.Sprintf("Update Series SET title='%v', overview='%v', popularity=%v, seasons=%v, episodes=%v, posterPath='%v', voteCount=%v, voteAvg=%v, firstAir='%v', lastAir='%v', tagline='%v' WHERE id=%v", series.Name, series.Overview, series.Popularity, series.Number_of_seasons, series.Number_of_episodes, series.Poster_Path, series.Vote_Count, series.Vote_Average, series.First_air_date, series.Last_air_date, series.Tagline, series.ID)
 		_, err := client.DB.Exec(sqlstr)
 		if err != nil {

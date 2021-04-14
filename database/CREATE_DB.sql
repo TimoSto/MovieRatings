@@ -10,11 +10,14 @@ DROP TABLE IF EXISTS MovieWeekPopularity;
 DROP TABLE IF EXISTS SeriesGenre;
 DROP TABLE IF EXISTS MovieGenre;
 DROP TABLE IF EXISTS MovieCountry;
+DROP TABLE IF EXISTS MovieProvider;
+DROP TABLE IF EXISTS SeriesProvider;
 DROP TABLE IF EXISTS SeriesCountry;
 DROP TABLE IF EXISTS SeriesNetwork;
 DROP TABLE IF EXISTS Genres;
 DROP TABLE IF EXISTS Series;
 DROP TABLE IF EXISTS Movies;
+DROP TABLE IF EXISTS Providers;
 DROP TABLE IF EXISTS Networks;
 DROP TABLE IF EXISTS Countries;
 
@@ -31,8 +34,13 @@ CREATE TABLE Networks (
     FOREIGN KEY (originCountry) REFERENCES Countries(id)
 );
 
+CREATE TABLE PROVIDERS (
+	id int PRIMARY KEY NOT NULL,
+    pname VARCHAR(50)
+);
+
 CREATE TABLE Movies (
-	id VARCHAR(10) PRIMARY KEY NOT NULL,
+	id INT PRIMARY KEY NOT NULL,
     title VARCHAR(100),
     overview VARCHAR(1000),
     popularity DOUBLE,
@@ -45,21 +53,30 @@ CREATE TABLE Movies (
     tagline VARCHAR(75)
 );
 
+CREATE TABLE MovieProvider (
+	movieId INT NOT NULL,
+    provider INT NOT NULL,
+    service VARCHAR(10) NOT NULL,
+    PRIMARY KEY (movieId, provider, service),
+    FOREIGN KEY (movieId) REFERENCES Movies(id),
+    FOREIGN KEY (provider) REFERENCES Providers(id)
+);
+
 CREATE TABLE Genres (
-	id VARCHAR(10) PRIMARY KEY NOT NULL,
+	id INT PRIMARY KEY NOT NULL,
     genre VARCHAR(50)
 );
 
 CREATE TABLE MovieGenre (
-	movieId VARCHAR(10) NOT NULL,
-    genreId VARCHAR(10) NOT NULL,
+	movieId INT NOT NULL,
+    genreId INT NOT NULL,
     PRIMARY KEY (movieId, genreId),
     FOREIGN KEY (movieId) REFERENCES Movies(id),
     FOREIGN KEY (genreId) REFERENCES Genres(id)
 );
 
 CREATE TABLE MovieCountry (
-	movieId VARCHAR(10) NOT NULL,
+	movieId INT NOT NULL,
     countryId VARCHAR(10) NOT NULL,
     PRIMARY KEY (movieId, countryId),
     FOREIGN KEY (movieId) REFERENCES Movies(id),
@@ -67,7 +84,7 @@ CREATE TABLE MovieCountry (
 );
 
 CREATE TABLE MovieWeekPopularity (
-	movieId VARCHAR(10) NOT NULL,
+	movieId INT NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
     popularity DOUBLE,
     voteAvg DOUBLE,
@@ -77,7 +94,7 @@ CREATE TABLE MovieWeekPopularity (
 );
 
 CREATE TABLE Series (
-	id VARCHAR(10) PRIMARY KEY NOT NULL,
+	id INT PRIMARY KEY NOT NULL,
     title VARCHAR(100),
     overview VARCHAR(1000),
     popularity DOUBLE,
@@ -92,15 +109,15 @@ CREATE TABLE Series (
 );
 
 CREATE TABLE SeriesGenre (
-	seriesId VARCHAR(10) NOT NULL,
-    genreId VARCHAR(10) NOT NULL,
+	seriesId INT NOT NULL,
+    genreId INT NOT NULL,
     PRIMARY KEY (seriesId, genreId),
     FOREIGN KEY (seriesId) REFERENCES Series(id),
     FOREIGN KEY (genreId) REFERENCES Genres(id)
 );
 
 CREATE TABLE SeriesCountry (
-	seriesId VARCHAR(10) NOT NULL,
+	seriesId INT NOT NULL,
     countryId VARCHAR(10) NOT NULL,
     PRIMARY KEY (seriesId, countryId),
     FOREIGN KEY (seriesId) REFERENCES Series(id),
@@ -108,7 +125,7 @@ CREATE TABLE SeriesCountry (
 );
 
 CREATE TABLE SeriesNetwork (
-	seriesId VARCHAR(10) NOT NULL,
+	seriesId INT NOT NULL,
     networkId VARCHAR(10) NOT NULL,
     PRIMARY KEY (seriesId, networkId),
     FOREIGN KEY (seriesId) REFERENCES Series(id),
@@ -116,7 +133,7 @@ CREATE TABLE SeriesNetwork (
 );
 
 CREATE TABLE SeriesWeekPopularity (
-	seriesId VARCHAR(10) NOT NULL,
+	seriesId INT NOT NULL,
     weekNr VARCHAR(10) NOT NULL,
     popularity DOUBLE,
     voteAvg DOUBLE,
@@ -126,7 +143,7 @@ CREATE TABLE SeriesWeekPopularity (
 );
 
 CREATE TABLE Personen (
-	id VARCHAR(10) PRIMARY KEY NOT NULL,
+	id INT PRIMARY KEY NOT NULL,
     name VARCHAR(50),
     birthday VARCHAR(10),
     deathday VARCHAR(10),
@@ -137,16 +154,16 @@ CREATE TABLE Personen (
 );
 
 CREATE TABLE PersonWeek (
-	personId VARCHAR(10) NOT NULL,
+	personId INT NOT NULL,
     weekNr int NOT NULL,
     PRIMARY KEY (personId, weekNr),
     FOREIGN KEY (personID) REFERENCES Personen(id)
 );
 
 CREATE TABLE MovieWeekPerson (
-	movieId VARCHAR(10) NOT NULL,
+	movieId INT NOT NULL,
     weekNr VARCHAR(10) NOt NULL,
-    personId VARCHAR(10) NOT NULL,
+    personId INT NOT NULL,
     popularity DOUBLE,
     revenue DOUBLE,
     voteAvg DOUBLE,
@@ -157,8 +174,8 @@ CREATE TABLE MovieWeekPerson (
 );
 
 CREATE TABLE MovieCredits (
-	movieId VARCHAR(10) NOT NULL,
-    personId VARCHAR(10) NOT NULL,
+	movieId INT NOT NULL,
+    personId INT NOT NULL,
     job varchar(120) NOT NULL,
     PRIMARY KEY (movieId, personId, job),
     FOREIGN KEY (movieId) REFERENCES Movies(id),
@@ -166,10 +183,19 @@ CREATE TABLE MovieCredits (
 );
 
 CREATE TABLE SeriesCredits (
-	seriesId VARCHAR(10) NOT NULL,
-    personId VARCHAR(10) NOT NULL,
+	seriesId INT NOT NULL,
+    personId INT NOT NULL,
     job varchar(120) NOT NULL,
     PRIMARY KEY (seriesId, personId, job),
     FOREIGN KEY (seriesId) REFERENCES Series(id),
     FOREIGN KEY (personId) REFERENCES Personen(id)
+);
+
+CREATE TABLE SeriesProvider (
+	seriesId INT NOT NULL,
+    provider INT NOT NULL,
+    service VARCHAR(10) NOT NULL,
+    PRIMARY KEY (seriesId, provider, service),
+    FOREIGN KEY (seriesId) REFERENCES Series(id),
+    FOREIGN KEY (provider) REFERENCES Providers(id)
 );

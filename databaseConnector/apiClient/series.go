@@ -61,6 +61,9 @@ func(client *APIClient)GetSeriesByID(id int) Series {
 	credits := client.GetCreditsForTV(series.ID)
 	series.Cast = credits.Cast
 	series.Crew = credits.Crew
+
+	providers := client.GetStreamingProvidersForMovie(series.ID)
+	series.WatchProviders = providers
 	return series
 }
 
@@ -79,4 +82,22 @@ func(client *APIClient)GetCreditsForTV(id int) CreditsForMovieOrTV {
 		panic(err)
 	}
 	return credits
+}
+
+func(client *APIClient)GetStreamingProvidersForSeries(id int) ProviderResultSetDE{
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/tv/%v/watch/providers?api_key=%v", id, client.APIKey))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var resultSet StreamingProvidersResultSet
+	err = json.Unmarshal(res, &resultSet)
+	if err != nil {
+		panic(err)
+	}
+
+	return resultSet.Results.DE
 }

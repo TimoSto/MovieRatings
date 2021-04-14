@@ -100,6 +100,11 @@ type Genre struct {
 
 }
 
+type Provider struct {
+	ID sql.NullInt64 `json:id`
+	PName sql.NullString `json:pname`
+}
+
 func(client *SQLClient)EstablishConnectionToDB() {
 	fmt.Println("Trying to connect to to mySQL-DB...")
 	var err error

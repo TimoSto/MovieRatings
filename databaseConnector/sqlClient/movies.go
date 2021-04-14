@@ -25,7 +25,6 @@ func(client *SQLClient)ExtendOrUpdateMovieTable(movies []apiClient.Movie) {
 		if client.MovieWithIdExists(movie.ID) {
 			client.UpdateMovieEntry(movie)
 		} else {
-			fmt.Println("Create")
 			client.CreateMovieEntry(movie)
 		}
 	}
@@ -33,6 +32,7 @@ func(client *SQLClient)ExtendOrUpdateMovieTable(movies []apiClient.Movie) {
 
 func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieEntry "+movie.Title)
 	sqlstr := fmt.Sprintf("INSERT INTO Movies(id, title, overview, popularity, releaseDate, posterPath, voteCount, voteAvg, revenue, runtime, tagline) VALUES(%v,'%v','%v',%v,'%v','%v',%v, %v,'%v', %v, '%v')",movie.ID, movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Count, movie.Vote_Average, movie.Revenue, movie.Runtime, movie.Tagline)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -68,10 +68,29 @@ func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 		}
 		client.CreateMoviePersonEntry(movie.ID, person.ID, person.Job)
 	}
+	for _,provider := range movie.WatchProviders.Buy {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateMovieProviderEntry(movie.ID, provider.Provider_id, "buy")
+	}
+	for _,provider := range movie.WatchProviders.Rent {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateMovieProviderEntry(movie.ID, provider.Provider_id, "rent")
+	}
+	for _,provider := range movie.WatchProviders.Flatrate {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateMovieProviderEntry(movie.ID, provider.Provider_id, "flat")
+	}
 }
 
 func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
 	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieGenreEntry", movie, genre)
 	sqlstr := fmt.Sprintf("INSERT INTO MovieGenre(movieId, genreId) VALUES(%v,'%v')",movie, genre)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -81,6 +100,7 @@ func(client *SQLClient)CreateMovieGenreEntry(movie int, genre int) {
 
 func(client *SQLClient)CreateMovieCountryEntry(movie int, country string) {
 	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieCountry-Entry", movie, country)
 	sqlstr := fmt.Sprintf("INSERT INTO MovieCountry(movieId, countryId) VALUES(%v,'%v')",movie, country)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -90,8 +110,19 @@ func(client *SQLClient)CreateMovieCountryEntry(movie int, country string) {
 
 func(client *SQLClient)CreateMoviePersonEntry(movie int, person int, job string) {
 	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create MovieCreditsEntry", movie, person, job)
 	job = strings.Replace(job, "'", "\\'", -1)
 	sqlstr := fmt.Sprintf("INSERT INTO MovieCredits(movieId, personId, job) VALUES(%v,%v,'%v')",movie, person, job)
+	_, err := client.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateMovieProviderEntry(movie int, provider int, service string) {
+	fmt.Println("Create MovieProviderEntry", movie, provider)
+	service = strings.Replace(service, "'", "\\'", -1)
+	sqlstr := fmt.Sprintf("INSERT INTO MovieProvider(movieId, provider, service) VALUES(%v,%v,'%v')", movie, provider, service)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
@@ -137,6 +168,8 @@ func(client *SQLClient)UpdateMovieEntry(movie apiClient.Movie) {
 			panic(err)
 		}
 	}
+
+
 }
 
 func(client *SQLClient) WriteMovieTrendsToSQL(trends []apiClient.Movie, week int) {
@@ -153,7 +186,6 @@ func(client *SQLClient) CheckIfMovieTrendEntryExist(trend apiClient.Movie, weekN
 	var found_id int
 	switch err := row.Scan(&found_id); err {
 	case sql.ErrNoRows:
-		fmt.Println("Create MovieWeekPopularity-Entry")
 		client.WriteMovieTrendToSQL(trend, weekNr)
 	case nil:
 
@@ -163,6 +195,7 @@ func(client *SQLClient) CheckIfMovieTrendEntryExist(trend apiClient.Movie, weekN
 }
 
 func(client *SQLClient) WriteMovieTrendToSQL(movie apiClient.Movie, weekNr int) {
+	fmt.Println("Create MovieTrend Entry", movie.Title, weekNr)
 	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, weekNr, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
 	_, err := client.Exec(sql)
 	if err != nil {

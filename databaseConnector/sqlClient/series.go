@@ -24,7 +24,6 @@ func(client *SQLClient)ExtendOrUpdateTVTable(series []apiClient.Series) {
 		if client.SeriesWithIdExists(serie.ID) {
 			client.UpdateSeriesEntry(serie)
 		} else {
-			fmt.Println("Create")
 			client.CreateSeriesEntry(serie)
 		}
 	}
@@ -32,6 +31,7 @@ func(client *SQLClient)ExtendOrUpdateTVTable(series []apiClient.Series) {
 
 func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 	//Eintrag für Film in SQL-DB hinzufügen
+	fmt.Println("Create SeriesEntry", series.Name)
 	sqlstr := fmt.Sprintf("INSERT INTO Series(id, title, overview, popularity, seasons, episodes, posterPath, voteCount, voteAvg, firstAir, lastAir, tagline) VALUES(%v,'%v','%v',%v,%v,%v,'%v',%v, %v,'%v', '%v', '%v')", series.ID, series.Name, series.Overview, series.Popularity, series.Number_of_seasons, series.Number_of_episodes, series.Poster_Path, series.Vote_Count, series.Vote_Average, series.First_air_date, series.Last_air_date, series.Tagline)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -72,6 +72,24 @@ func(client *SQLClient)CreateSeriesEntry(series apiClient.Series) {
 			client.CreatePersonEntry(person)
 		}
 		client.CreateTVPersonEntry(series.ID, person.ID, person.Job)
+	}
+	for _,provider := range series.WatchProviders.Buy {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateSeriesProviderEntry(series.ID, provider.Provider_id, "buy")
+	}
+	for _,provider := range series.WatchProviders.Rent {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateSeriesProviderEntry(series.ID, provider.Provider_id, "rent")
+	}
+	for _,provider := range series.WatchProviders.Flatrate {
+		if client.GetProviderByID(provider.Provider_id).ID.Valid == false {
+			client.CreateProviderEntry(apiClient.StreamingProvider(provider))
+		}
+		client.CreateSeriesProviderEntry(series.ID, provider.Provider_id, "flat")
 	}
 }
 
@@ -150,9 +168,19 @@ func(client *SQLClient)CreateSeriesNetworkEntry(series int, network apiClient.Ne
 
 func(client *SQLClient)CreateTVPersonEntry(series int, person int, job string) {
 	//Eintrag für Film in SQL-DB hinzufügen
-	fmt.Println("Create MovieCountryEntry ")
+	fmt.Println("Create SeriesCreditsEntry ")
 	job = strings.Replace(job, "'", "\\'", -1)
 	sqlstr := fmt.Sprintf("INSERT INTO SeriesCredits(seriesId, personId, job) VALUES(%v,%v,'%v')", series, person, job)
+	_, err := client.Exec(sqlstr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func(client *SQLClient)CreateSeriesProviderEntry(series int, provider int, service string) {
+	fmt.Println("Create SeriesProvider Entry", series, provider, series)
+	service = strings.Replace(service, "'", "\\'", -1)
+	sqlstr := fmt.Sprintf("INSERT INTO SeriesProvider(seriesId, provider, service) VALUES(%v,%v,'%v')", series, provider, service)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
 		panic(err)
@@ -183,6 +211,7 @@ func(client *SQLClient) CheckIfTVTrendEntryExist(trend apiClient.Series, weekNr 
 }
 
 func(client *SQLClient) WriteTVTrendToSQL(series apiClient.Series, weekNr int) {
+	fmt.Println("Create SeriesTrend Entry", series.Name, weekNr)
 	sql := fmt.Sprintf("INSERT INTO SeriesWeekPopularity(seriesId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)", series.ID, weekNr, series.Popularity, series.Vote_Average, series.Vote_Count)
 	_, err := client.Exec(sql)
 	if err != nil {

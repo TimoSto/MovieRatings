@@ -71,7 +71,6 @@ func(client *SQLClient) CheckIfPersonTrendEntryExist(trend apiClient.Person, wee
 	var found_id int
 	switch err := row.Scan(&found_id); err {
 	case sql.ErrNoRows:
-		fmt.Println("Create PersonWeekPopularity-Entry")
 		client.WritePersonTrendToSQL(trend, weekNr)
 	case nil:
 
@@ -81,6 +80,7 @@ func(client *SQLClient) CheckIfPersonTrendEntryExist(trend apiClient.Person, wee
 }
 
 func(client *SQLClient) WritePersonTrendToSQL(person apiClient.Person, weekNr int) {
+	fmt.Println("Create PersonTrend Entry", person.Name, weekNr)
 	sql := fmt.Sprintf("INSERT INTO PersonWeek(personId, weekNr) VALUES (%v, %v)", person.ID, weekNr)
 	_, err := client.Exec(sql)
 	if err != nil {

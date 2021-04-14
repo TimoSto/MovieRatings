@@ -20,6 +20,7 @@ type Movie struct {
 	Production_countries []Country `json:production_countires`
 	Cast                 []Person
 	Crew                 []Person
+	WatchProviders		 ProviderResultSetDE
 }
 
 type Series struct {
@@ -41,6 +42,7 @@ type Series struct {
 	Production_countries []Country `json:production_countires`
 	Cast                 []Person
 	Crew                 []Person
+	WatchProviders		 ProviderResultSetDE
 }
 
 type Person struct {
@@ -93,4 +95,29 @@ type TrendResultTV struct {
 type TrendResultPerson struct {
 	Page          int `json:page`
 	Results       []Person `json:results`
+}
+
+type StreamingProvider struct {
+	Provider_id int `json:provider_id`
+	Provider_name string `json:provider_name`
+}
+
+type Provider struct {
+	Provider_id int `json:provider_id`
+	Provider_name string `json:provider_name`
+}
+
+type ProviderResultSetDE struct {
+	Rent []Provider `json:rent`
+	Buy []Provider `json:buy`
+	Flatrate []Provider `json:flatrate`
+}
+
+type StreamingProviderResults struct {
+	DE ProviderResultSetDE `json:DE`
+}
+
+type StreamingProvidersResultSet struct {
+	id int `json:id`
+	Results StreamingProviderResults `json:results`
 }

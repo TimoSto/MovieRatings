@@ -103,6 +103,7 @@ type Genre struct {
 type Provider struct {
 	ID sql.NullInt64 `json:id`
 	PName sql.NullString `json:pname`
+	Service sql.NullString `json:service`
 }
 
 func(client *SQLClient)EstablishConnectionToDB() {

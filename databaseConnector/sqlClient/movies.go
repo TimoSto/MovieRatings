@@ -168,8 +168,6 @@ func(client *SQLClient)UpdateMovieEntry(movie apiClient.Movie) {
 			panic(err)
 		}
 	}
-
-
 }
 
 func(client *SQLClient) WriteMovieTrendsToSQL(trends []apiClient.Movie, week int) {

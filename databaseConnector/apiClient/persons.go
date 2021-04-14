@@ -8,6 +8,7 @@ import (
 )
 
 func(client *APIClient)GetPersonTrends() []Person{
+	fmt.Println("Retrieving Person-Trend information from TMDb-Api...")
 	var persons []Person
 	for i:=1 ; i <=5 ; i++ {
 		persons = append(persons, client.GetPersonTrendPage(i)...)

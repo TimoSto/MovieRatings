@@ -48,5 +48,6 @@ func main() {
 
 	sqlClient.WritePersonTrendsToSQL(personTrends, weekNr)
 
+
 	defer sqlClient.DB.Close()
 }

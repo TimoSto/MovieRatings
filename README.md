@@ -22,6 +22,10 @@ Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (out/SaveTre
 - Ggf. die Einträge in der MovieGenre-Tabelle ergänzen
 - Ggf. werden die Einträge in der Personen-Tabelle ergänzt
 - Ggf. werden die Einträge in der MovieCredits-Tabelle ergänzt
+- Ggf. Countries-Tabelle ergänzen
+- Ggf. MovieCountry-Tabelle ergänzen
+- Ggf. Provider-Einträge ergänzen
+- Ggf. Movie-Provider-Einträge ergänzen
 - GGf. die Einträge in der MovieWeekPopularity-Tabelle ergänzen
 - Die ersten 100 Serien aus den TMDb-Trends der aktuellen Woche ermitteln
 - Ggf. die Einträge in der Series-Tabelle ergänzen
@@ -29,6 +33,10 @@ Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (out/SaveTre
 - Ggf. die Einträge in der SeriesGenre-Tabelle ergänzen
 - Ggf. werden die Einträge in der Personen-Tabelle ergänzt
 - Ggf. werden die Einträge in der SeriesCredits-Tabelle ergänzt
+- Ggf. Countries-Tabelle ergänzen
+- Ggf. SeriesCountry-Tabelle ergänzen
+- Ggf. Provider-Einträge ergänzen
+- Ggf. Series-Provider-Einträge ergänzen
 - GGf. die Einträge in der SeriesWeekPopularity-Tabelle ergänzen
 - Die beliebten Personen werden in der Personen-Tabelle ergänz
 - Ggf. wird die PersonWeek-Tabelle ergänzt

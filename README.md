@@ -1,6 +1,15 @@
 # MovieRatings
 Die Corona-Pandemie hat vieles verändert. Doch hat sie auch einen Einfluss auf die Gewohnheiten der Filmliebhaber? Schauen die Menschen jetzt mehr Komödien oder mehr Distopien-Filme? 
 Um diese Frage zu beantworten, können mit dieser Dashboard-Anwendung die Anzahl der in jeder Woche auf TMDb geloggten Filme je nach Genre mit dem Verlauf der Corona-Zahlen verglichen werden.
+## Informationen, die dargestellt werden (können)
+- Verlauf der Coronazahlen
+- Trends der jeweiligen Genres (Film oder TV) in jeder Woche (Als Balkendiagramm für Genre oder Kuchendiagramm für Woche)
+- Streaming-Anbieter, welche die Trends zur Verfügung stellen
+- Produktionsländer der Trends
+- Networks der Serien
+- Cast und Crew der Filme/Serien
+- Beliebte Personen in der jeweiligen Woche
+- Filme/Serien, in denen die Person mitgewirkt hat
 ## Systemvoraussetzungen
 ## Datenbank
 - mySQL-Server

@@ -11,10 +11,10 @@ Um diese Frage zu beantworten, können mit dieser Dashboard-Anwendung die Anzahl
 - Beliebte Personen in der jeweiligen Woche
 - Filme/Serien, in denen die Person mitgewirkt hat
 ## Systemvoraussetzungen
-## Datenbank
+### Datenbank
 - mySQL-Server
 - Golang oder Docker (wenn die Anwendung neu gebaut werden soll, sonst kann die EXE verwendet werden)
-### Datenbank
+## Datenbank
 Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm geschrieben (out/SaveTrendsOfWeek.exe) in Golang verwendet. Dieses erledigt folgende Aufgaben:
 - Die ersten 100 Filme aus den TMDb-Trends der aktuellen Woche ermitteln
 - Ggf. die Einträge in der Movies-Tabelle ergänzen

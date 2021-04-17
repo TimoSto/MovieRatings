@@ -89,3 +89,9 @@ func(client *SQLClient) WritePersonTrendToSQL(person apiClient.Person, weekNr in
 	//fmt.Println(res)
 	//WriteSQLToFile(sql)
 }
+
+func(client *SQLClient) UpdatePersonIfNecessary(sqlPerson Person, apiPerson apiClient.Person) {
+	if strings.Compare(sqlPerson.Birthday.String, apiPerson.Birthday) != 0 {
+
+	}
+}

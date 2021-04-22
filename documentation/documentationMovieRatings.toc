@@ -1,0 +1,10 @@
+\babel@toc {ngerman}{}
+\contentsline {part}{Abkürzungsverzeichnis}{I}% 
+\contentsline {part}{Abbildungsverzeichnis}{II}% 
+\contentsline {part}{Tabellenverzeichnis}{III}% 
+\vspace {24pt}
+\contentsline {part}{1\hspace {1em}Einführung}{1}% 
+\contentsline {part}{2\hspace {1em}Werkzeuge}{2}% 
+\contentsline {part}{3\hspace {1em}Datenbasis}{3}% 
+\contentsline {section}{\numberline {3.1}Datenquelle}{3}% 
+\contentsline {part}{4\hspace {1em}Dashboard}{4}% 

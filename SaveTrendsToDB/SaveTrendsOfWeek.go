@@ -15,27 +15,53 @@ func main() {
 	sqlClient.EstablishConnectionToDB()
 
 	//Zunächst werden die Film-Trends ermittelt (dazu werden erst die Trends abgerufen und dann nochmal die Infos zu jedem Film in den Trends einzeln)
-	movieTrends := apiClient.GetMovieTrends()
+	//movieTrends := apiClient.GetMovieTrends()
+	//
+	////Im folgenden werden zunächst die Referenz-Tabellen ergänzt
+	//persons := apiClient.GetPersonObjects(movieTrends)
+	//
+	//sqlClient.ExtendOrUpdatePersonTable(persons)
+	//
+	//genres := apiClient.GetGenres(movieTrends)
+	//
+	//sqlClient.ExtendGenresTable(genres)
+	//
+	//countries := apiClient.GetCountries(movieTrends)
+	//
+	//sqlClient.ExtendCountriesTable(countries)
+	//
+	//fmt.Println(movieTrends[1].WatchProviders)
+	//
+	//providers := apiClient.GetStreamingProvidersForMovieTrends(movieTrends)
+	//
+	//sqlClient.ExtendProviderTable(providers)
+	//
+	////Nun werden die Tabellem Movies, Movie-Genre, ... ergänzt
+	//sqlClient.ExtendOrUpdateMovies(movieTrends)
 
-	persons := apiClient.GetPersonObjects(movieTrends)
+	seriesTrends := apiClient.GetTVTrends()
+
+	persons := apiClient.GetPersonObjectsTV(seriesTrends)
+
+	fmt.Println(len(persons))
 
 	sqlClient.ExtendOrUpdatePersonTable(persons)
 
-	genres := apiClient.GetGenres(movieTrends)
+	genres := apiClient.GetGenresTV(seriesTrends)
 
 	sqlClient.ExtendGenresTable(genres)
 
-	countries := apiClient.GetCountries(movieTrends)
+	countries := apiClient.GetCountriesTV(seriesTrends)
 
 	sqlClient.ExtendCountriesTable(countries)
 
-	fmt.Println(movieTrends[1].WatchProviders)
-
-	providers := apiClient.GetStreamingProvidersForMovieTrends(movieTrends)
+	providers := apiClient.GetStreamingProvidersForTVTrends(seriesTrends)
 
 	sqlClient.ExtendProviderTable(providers)
 
-	sqlClient.ExtendOrUpdateMovies(movieTrends)
+	networks := apiClient.GetNetworksForTVTrends(seriesTrends)
+
+	sqlClient.ExtendNetworkTable(networks)
 
 	defer sqlClient.DB.Close()
 }

@@ -57,6 +57,31 @@ func(client *APIClient)GetStreamingProvidersForMovieTrends(trends []Movie) ([]Pr
 	return providers
 }
 
+func(client *APIClient)GetStreamingProvidersForTVTrends(trends []Series) ([]Provider){
+	var providers []Provider
+
+	for _,movie := range trends {
+
+		//movie.WatchProviders = provider
+		for _,p := range movie.WatchProviders.Rent {
+			if findProviderInSlice(providers, p.Provider_id) < 0 {
+				providers = append(providers, p)
+			}
+		}
+		for _,p := range movie.WatchProviders.Buy {
+			if findProviderInSlice(providers, p.Provider_id) < 0 {
+				providers = append(providers, p)
+			}
+		}
+		for _,p := range movie.WatchProviders.Flatrate {
+			if findProviderInSlice(providers, p.Provider_id) < 0 {
+				providers = append(providers, p)
+			}
+		}
+	}
+	return providers
+}
+
 func(client *APIClient)GetStreamingProvidersForMovie(id int) ProviderResultSetDE{
 	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/movie/%v/watch/providers?api_key=%v", id, client.APIKey))
 	if err != nil {

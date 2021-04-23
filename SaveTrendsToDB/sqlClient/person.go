@@ -32,7 +32,7 @@ func(client *SQLClient)GetPersonByID(id int) (Person, int){
 }
 
 func(client *SQLClient)ExtendOrUpdatePersonTable(persons []apiClient.Person) {
-
+	fmt.Println("Persons")
 	for _, person := range persons {
 		sqlperson, exists := client.GetPersonByID(person.ID)
 		if exists == -1 {

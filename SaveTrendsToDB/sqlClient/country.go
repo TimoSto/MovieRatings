@@ -12,6 +12,7 @@ type Country struct {
 }
 
 func(client *SQLClient)ExtendCountriesTable(countries []apiClient.Country) {
+	fmt.Println("Countries")
 	for _, c := range countries {
 		if _,n := client.GetCountryByID(c.ISO_3166_1); n == -1 {
 			client.CreateCountryEntry(c)

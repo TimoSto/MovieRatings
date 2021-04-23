@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type Movie struct {
@@ -34,7 +35,8 @@ type TrendResultMovie struct {
 func(client *APIClient)GetMovieTrends() []Movie{
 	fmt.Println("Retrieve movie-trend-information from TMDb-API...")
 	var movies []Movie
-	for i:=1 ; i<=1 ; i++ {
+	for i:=1 ; i<=5 ; i++ {
+		fmt.Println(i)
 		trends := client.GetMovieTrendPage(i)
 		for _,movie := range trends {
 			movies = append(movies, client.GetMovieByID(movie.ID))
@@ -76,13 +78,15 @@ func(client *APIClient)GetMovieByID(id int) Movie {
 	if err != nil {
 		panic(err)
 	}
-
+	movie.Title = strings.Replace(movie.Title, "'","\\'", -1)
+	movie.Overview = strings.Replace(movie.Overview, "'","\\'", -1)
+	movie.Tagline = strings.Replace(movie.Tagline, "'","\\'", -1)
 	credits := client.GetCreditsForMovie(movie.ID)
-	if len(credits.Crew) > 5 {
-		movie.Crew = credits.Crew[:5]
+	if len(credits.Crew) > 8 {
+		movie.Crew = credits.Crew[:8]
 	}
-	if len(credits.Cast) > 5 {
-		movie.Cast = credits.Cast[:5]
+	if len(credits.Cast) > 8 {
+		movie.Cast = credits.Cast[:8]
 	}
 	providers := client.GetStreamingProvidersForMovie(movie.ID)
 	movie.WatchProviders = providers

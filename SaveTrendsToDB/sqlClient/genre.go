@@ -13,6 +13,7 @@ type Genre struct {
 }
 
 func(client *SQLClient)ExtendGenresTable(genres []apiClient.Genre) {
+	fmt.Println("Genres")
 	for _,genre := range genres {
 		if _,n := client.GetGenreByID(genre.ID); n == -1 {
 			client.CreateGenreEntry(genre)

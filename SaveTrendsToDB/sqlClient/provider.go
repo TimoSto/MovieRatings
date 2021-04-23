@@ -13,6 +13,7 @@ type Provider struct {
 }
 
 func(client *SQLClient)ExtendProviderTable(providers []apiClient.Provider) {
+	fmt.Println("Providers")
 	for _,p := range providers {
 		if _,n := client.GetProviderByID(p.Provider_id); n == -1 {
 			client.CreateProviderEntry(p)

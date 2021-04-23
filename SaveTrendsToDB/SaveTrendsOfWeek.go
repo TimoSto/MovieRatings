@@ -35,9 +35,7 @@ func main() {
 
 	sqlClient.ExtendProviderTable(providers)
 
-	fmt.Println(providers)
-
-	fmt.Println(movieTrends[1].WatchProviders)
+	sqlClient.ExtendOrUpdateMovies(movieTrends)
 
 	defer sqlClient.DB.Close()
 }

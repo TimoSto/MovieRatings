@@ -9,8 +9,9 @@ type Genre struct {
 
 func (client *APIClient)GetGenres(movies []Movie) []Genre {
 	var genres []Genre
-
+	fmt.Print("Analysing genres")
 	for _, movie := range movies {
+		fmt.Print(".")
 		//Cast zur Personen-Liste hinzufügen, falls noch nicht vorhanden
 		for _,genre := range movie.Genres {
 			if findGenreInSlice(genres, genre.ID) == -1 {
@@ -24,8 +25,9 @@ func (client *APIClient)GetGenres(movies []Movie) []Genre {
 
 func (client *APIClient)GetGenresTV(movies []Series) []Genre {
 	var genres []Genre
-	fmt.Println("Genres")
+	fmt.Print("Analysing genres")
 	for _, movie := range movies {
+		fmt.Print(".")
 		//Cast zur Personen-Liste hinzufügen, falls noch nicht vorhanden
 		for _,genre := range movie.Genres {
 			if findGenreInSlice(genres, genre.ID) == -1 {

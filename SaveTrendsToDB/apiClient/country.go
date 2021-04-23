@@ -1,6 +1,7 @@
 package apiClient
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -11,8 +12,9 @@ type Country struct {
 
 func(client *APIClient)GetCountries(trends []Movie) []Country {
 	var countries []Country
-
+	fmt.Print("Analysing countries")
 	for _,movie := range trends {
+		fmt.Print(".")
 		for _,country := range movie.Production_countries {
 			if findCountryInSlice(countries, country.ISO_3166_1) == -1 {
 				countries = append(countries, country)
@@ -24,8 +26,9 @@ func(client *APIClient)GetCountries(trends []Movie) []Country {
 
 func(client *APIClient)GetCountriesTV(trends []Series) []Country {
 	var countries []Country
-
+	fmt.Print("Analysing countries")
 	for _,movie := range trends {
+		fmt.Print(".")
 		for _,country := range movie.Production_countries {
 			if findCountryInSlice(countries, country.ISO_3166_1) == -1 {
 				countries = append(countries, country)

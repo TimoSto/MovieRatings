@@ -32,6 +32,10 @@ func(client *SQLClient)ExtendOrUpdateMovies(movies []apiClient.Movie) {
 		} else {
 			client.UpdateMovieEntry(movie, sqlmovie)
 		}
+
+		if client.MovieTrendExists(movie.ID, apiClient.WeekNr) == false {
+			client.WriteMovieTrendToSQL(movie, apiClient.WeekNr)
+		}
 	}
 }
 
@@ -179,4 +183,29 @@ func(client *SQLClient)UpdateMovieEntry(movie apiClient.Movie, sqlmovie Movie) {
 	//		client.UpdatePersonEntry(person)
 	//	}
 	//}
+}
+
+func(client *SQLClient) WriteMovieTrendToSQL(movie apiClient.Movie, weekNr int) {
+	fmt.Println("Create MovieTrend Entry", movie.Title, weekNr)
+	sql := fmt.Sprintf("INSERT INTO MovieWeekPopularity(movieId, weekNr, popularity, voteAVG, voteCount) VALUES ('%v', %v, %v, %v, %v)",movie.ID, weekNr, movie.Popularity, movie.Vote_Average, movie.Vote_Count)
+	_, err := client.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Println(res)
+	WriteSQLToFile(sql)
+}
+
+func(client *SQLClient) MovieTrendExists(movieID int, weekNr int) bool{
+	sqlstr := fmt.Sprintf("SELECT movieid FROM MovieWeekPopularity WHERE movieid=%v AND weekNr=%v", movieID, weekNr)
+	row := client.DB.QueryRow(sqlstr)
+	var found_id int
+	err := row.Scan(&found_id)
+	if err == sql.ErrNoRows{
+		return false
+	}
+	if err != nil {
+		panic(err)
+	}
+	return true
 }

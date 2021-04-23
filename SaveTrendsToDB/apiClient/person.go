@@ -29,8 +29,9 @@ type PersonJob struct {
 
 func (client *APIClient)GetPersonObjects(movies []Movie) []Person {
 	var persons []Person
-
+	fmt.Print("Anaysing Person-Informations")
 	for _, movie := range movies {
+		fmt.Print(".")
 		//Cast zur Personen-Liste hinzufügen, falls noch nicht vorhanden
 		for _,cast := range movie.Cast {
 			if findPersonInSlice(persons, cast.ID) == -1 {
@@ -51,8 +52,9 @@ func (client *APIClient)GetPersonObjects(movies []Movie) []Person {
 
 func (client *APIClient)GetPersonObjectsTV(series []Series) []Person {
 	var persons []Person
-	fmt.Println("personen")
+	fmt.Print("Anaysing Person-Informations")
 	for _, serie := range series {
+		fmt.Print(".")
 		//Cast zur Personen-Liste hinzufügen, falls noch nicht vorhanden
 		for _,cast := range serie.Cast {
 			if findPersonInSlice(persons, cast.ID) == -1 {

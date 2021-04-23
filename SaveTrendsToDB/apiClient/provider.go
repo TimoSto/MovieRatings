@@ -34,9 +34,9 @@ type MovieProviders struct {
 
 func(client *APIClient)GetStreamingProvidersForMovieTrends(trends []Movie) ([]Provider){
 	var providers []Provider
-
+	fmt.Print("Analysing providers")
 	for _,movie := range trends {
-
+		fmt.Print(".")
 		//movie.WatchProviders = provider
 		for _,p := range movie.WatchProviders.Rent {
 			if findProviderInSlice(providers, p.Provider_id) < 0 {
@@ -59,9 +59,9 @@ func(client *APIClient)GetStreamingProvidersForMovieTrends(trends []Movie) ([]Pr
 
 func(client *APIClient)GetStreamingProvidersForTVTrends(trends []Series) ([]Provider){
 	var providers []Provider
-
+	fmt.Print("Analysing providers")
 	for _,movie := range trends {
-
+		fmt.Print(".")
 		//movie.WatchProviders = provider
 		for _,p := range movie.WatchProviders.Rent {
 			if findProviderInSlice(providers, p.Provider_id) < 0 {

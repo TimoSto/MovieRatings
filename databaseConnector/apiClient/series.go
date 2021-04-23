@@ -37,8 +37,8 @@ func(client *APIClient)GetTVTrendPage(n int) []Series{
 func(client *APIClient)GetSeries(trends []Series) []Series {
 	//In den Trends stehen nicht alle Attribute
 	var series []Series
-	for _, movie := range trends {
-		series = append(series, client.GetSeriesByID(movie.ID))
+	for _, serie := range trends {
+		series = append(series, client.GetSeriesByID(serie.ID))
 	}
 	return series
 }

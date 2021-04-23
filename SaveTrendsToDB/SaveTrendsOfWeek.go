@@ -19,8 +19,6 @@ func main() {
 	sqlClient := MySQL.SQLClient{}
 	sqlClient.EstablishConnectionToDB()
 
-
-
 	//Zunächst werden die Film-Trends ermittelt (dazu werden erst die Trends abgerufen und dann nochmal die Infos zu jedem Film in den Trends einzeln)
 	movieTrends := apiClient.GetMovieTrends()
 
@@ -37,14 +35,14 @@ func main() {
 
 	sqlClient.ExtendCountriesTable(countries)
 
-	fmt.Println(movieTrends[1].WatchProviders)
-
 	providers := apiClient.GetStreamingProvidersForMovieTrends(movieTrends)
 
 	sqlClient.ExtendProviderTable(providers)
 
 	//Nun werden die Tabellem Movies, Movie-Genre, ... ergänzt
 	sqlClient.ExtendOrUpdateMovies(movieTrends)
+
+	sqlClient.ExtendMovieTrendTable(movieTrends)
 
 	//TV-Trends
 	seriesTrends := apiClient.GetTVTrends()
@@ -69,6 +67,10 @@ func main() {
 	networks := apiClient.GetNetworksForTVTrends(seriesTrends)
 
 	sqlClient.ExtendNetworkTable(networks)
+
+	sqlClient.ExtendOrUpdateTVTable(seriesTrends)
+
+	sqlClient.ExtendTVTrends(seriesTrends)
 
 	defer sqlClient.DB.Close()
 }

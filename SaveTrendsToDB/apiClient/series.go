@@ -101,6 +101,10 @@ func(client *APIClient)GetSeriesByID(id int) Series {
 		series.Cast = credits.Cast
 	}
 
+	if len(series.Overview) > 999 {
+		series.Overview = series.Overview[:999]
+	}
+
 	providers := client.GetStreamingProvidersForMovie(series.ID)
 	series.WatchProviders = providers
 	return series

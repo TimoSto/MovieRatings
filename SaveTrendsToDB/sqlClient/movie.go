@@ -39,6 +39,15 @@ func(client *SQLClient)ExtendOrUpdateMovies(movies []apiClient.Movie) {
 	}
 }
 
+func(client *SQLClient)ExtendMovieTrendTable(movies []apiClient.Movie) {
+	for _, movie := range movies {
+
+		if client.MovieTrendExists(movie.ID, apiClient.WeekNr) == false {
+			client.WriteMovieTrendToSQL(movie, apiClient.WeekNr)
+		}
+	}
+}
+
 func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	fmt.Println("Create MovieEntry "+movie.Title)

@@ -96,7 +96,7 @@ func(client *SQLClient) CheckIfPersonTrendEntryExist(trend apiClient.Person, wee
 
 func(client *SQLClient) WritePersonTrendToSQL(person apiClient.Person, weekNr int) {
 	fmt.Println("Create PersonTrend Entry", person.Name, weekNr)
-	sql := fmt.Sprintf("INSERT INTO PersonWeek(personId, weekNr) VALUES (%v, %v)", person.ID, weekNr)
+	sql := fmt.Sprintf("INSERT INTO PersonWeek(personId, weekNr, popularity) VALUES (%v, %v, %v)", person.ID, weekNr, person.Popularity)
 	_, err := client.Exec(sql)
 	if err != nil {
 		panic(err)

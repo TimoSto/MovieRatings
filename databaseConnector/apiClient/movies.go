@@ -10,7 +10,7 @@ import (
 func(client *APIClient)GetMovieTrends() []Movie{
 	fmt.Println("Retrieve movie-trend-information from TMDb-API...")
 	var movies []Movie
-	for i:=1 ; i<=5 ; i++ {
+	for i:=1 ; i<=1 ; i++ {
 		movies = append(movies, client.GetMovieTrendPage(i)...)
 	}
 	return movies

@@ -21,7 +21,7 @@ func(client *SQLClient)GetPersonByID(id int) Person{
 func(client *SQLClient)CreatePersonEntry(person apiClient.Person) {
 	//Eintrag für Film in SQL-DB hinzufügen
 	person.Name = strings.Replace(person.Name, "'","\\'", -1)
-	fmt.Println("Create Person-Entry "+ person.Name)
+	fmt.Println("Create Person-Entry "+ person.Name, person.Birthday)
 	sqlstr := fmt.Sprintf("INSERT INTO Personen(id, name, birthday, deathday, popularity, profilePath, gender, profession) VALUES(%v,'%v','%v','%v',%v,'%v',%v,'%v')", person.ID, person.Name, person.Birthday, person.Deathday, person.Popularity, person.Profile_path, person.Gender, person.Known_for_department)
 	_, err := client.Exec(sqlstr)
 	if err != nil {
@@ -43,13 +43,14 @@ func(client *SQLClient)ExtendOrUpdatePersonTable(persons []apiClient.Person) {
 }
 
 func(client *SQLClient)UpdatePersonEntry(person apiClient.Person) {
-
+	fmt.Println(person.Birthday)
 	sqlperson := client.GetPersonByID(person.ID)
+	fmt.Println(person.Birthday)
 	different := sqlperson.Popularity.Float64 != person.Popularity ||
 		strings.Compare(sqlperson.Deathday.String, person.Deathday) != 0
 	if different {
-		fmt.Println("Update Person", person.ID)
-		sqlstr := fmt.Sprintf("UPDATE TABLE Personen set deathday='%v', popularity=%v where id=%v",person.Deathday, person.Popularity, person.ID)
+		fmt.Println("Update Person", person.ID, person.Birthday, sqlperson.Birthday)
+		sqlstr := fmt.Sprintf("UPDATE TABLE Personen set birthday='%v', popularity=%v where id=%v",person.Deathday, person.Popularity, person.ID)
 		_,err := client.Exec(sqlstr)
 		if err != nil {
 			panic(err)

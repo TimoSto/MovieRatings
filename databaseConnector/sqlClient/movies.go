@@ -54,8 +54,11 @@ func(client *SQLClient)CreateMovieEntry(movie apiClient.Movie) {
 		if i > 5 {
 			break
 		}
-		if client.GetPersonByID(person.ID).ID.Valid == false {
+		foundPerson := client.GetPersonByID(person.ID)
+		if foundPerson.ID.Valid == false {
 			client.CreatePersonEntry(person)
+		} else {
+			client.UpdatePersonEntry(person)
 		}
 		client.CreateMoviePersonEntry(movie.ID, person.ID, "Actor_"+person.Character)
 	}
@@ -159,13 +162,31 @@ func(client *SQLClient)UpdateMovieEntry(movie apiClient.Movie) {
 		strings.Compare(sqlmovie.Tagline.String, movie.Tagline) != 0 ||
 		strings.Compare(sqlmovie.PosterPath.String, movie.Poster_Path) != 0
 
-	//Eintrag für Film in SQL-DB hinzufügen
+	//Eintrag für Film in SQL-DB aktualisieren
 	if different {
 		fmt.Println("Update movie with id ",movie.ID)
 		sqlstr := fmt.Sprintf("Update Movies SET title='%v', overview='%v', popularity=%v, releaseDate='%v', posterPath='%v', voteCount=%v, voteAvg=%v, revenue=%v, runtime=%v, tagline='%v' WHERE id=%v", movie.Title, movie.Overview, movie.Popularity, movie.Release_Date, movie.Poster_Path, movie.Vote_Count, movie.Vote_Average, movie.Revenue, movie.Runtime, movie.Tagline, movie.ID)
 		_, err := client.Exec(sqlstr)
 		if err != nil {
 			panic(err)
+		}
+	}
+
+	for _,genre := range movie.Genres {
+		if client.GetGenreByID(genre.ID).ID.Valid == false {
+			client.CreateGenreEntry(genre)
+		}
+
+		if client.MovieGenreEntryExists(movie.ID, genre.ID) == false {
+			client.CreateMovieGenreEntry(movie.ID, genre.ID)
+		}
+	}
+
+	for _, person := range movie.Cast {
+		if client.GetPersonByID(person.ID).ID.Valid == false {
+			client.CreatePersonEntry(person)
+		} else {
+			client.UpdatePersonEntry(person)
 		}
 	}
 }

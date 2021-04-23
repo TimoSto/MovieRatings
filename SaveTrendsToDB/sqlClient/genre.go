@@ -2,9 +2,23 @@ package sqlClient
 
 import (
 	"database/sql"
-	"dbconn.com/apiClient"
 	"fmt"
+	"savetrends.com/apiClient"
 )
+
+type Genre struct {
+	ID sql.NullInt64 `json:id`
+	Genre sql.NullString `json:genre`
+
+}
+
+func(client *SQLClient)ExtendGenresTable(genres []apiClient.Genre) {
+	for _,genre := range genres {
+		if _,n := client.GetGenreByID(genre.ID); n == -1 {
+			client.CreateGenreEntry(genre)
+		}
+	}
+}
 
 func(client *SQLClient)CreateGenreEntry(genre apiClient.Genre) {
 	//Eintrag für Film in SQL-DB hinzufügen
@@ -16,21 +30,15 @@ func(client *SQLClient)CreateGenreEntry(genre apiClient.Genre) {
 	}
 }
 
-func(client *SQLClient)GetGenreByID(id int) Genre{
+func(client *SQLClient)GetGenreByID(id int) (Genre, int){
 	sqlstr := fmt.Sprintf("SELECT * FROM Genres WHERE id=%v", id)
 	row := client.DB.QueryRow(sqlstr)
 	var genre Genre
 	err := row.Scan(&genre.ID, &genre.Genre)
-	if err != nil && err != sql.ErrNoRows {
+	if err == sql.ErrNoRows {
+		return Genre{}, -1
+	} else if err != nil {
 		panic(err)
 	}
-	return genre
-}
-
-func(client *SQLClient)MovieGenreEntryExists(id int, genre int) bool{
-	sqlstr := fmt.Sprintf("SELECT Count(*) FROM MovieGenre WHERE movieId=%v AND genreID=%v", id, genre)
-	row := client.DB.QueryRow(sqlstr)
-	var c int
-	err := row.Scan(&c)
-	return err == nil && c != 0
+	return genre, 1
 }

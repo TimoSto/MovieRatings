@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7200 64-bit) (preloaded format=pdflatex 2019.10.13)  22 APR 2021 14:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7200 64-bit) (preloaded format=pdflatex 2019.10.13)  22 APR 2021 15:00
 entering extended mode
 **./documentationMovieRatings.tex
 (documentationMovieRatings.tex
@@ -678,15 +678,15 @@ File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(85.35826pt, 426.79135pt, 85.35826pt)
-* v-part:(T,H,B)=(85.35826pt, 660.10394pt, 99.58464pt)
+* h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
+* v-part:(T,H,B)=(56.9055pt, 688.5567pt, 99.58464pt)
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
-* \textwidth=426.79135pt
-* \textheight=660.10394pt
-* \oddsidemargin=13.08827pt
-* \evensidemargin=13.08827pt
-* \topmargin=-10.91173pt
+* \textwidth=455.24411pt
+* \textheight=688.5567pt
+* \oddsidemargin=-1.1381pt
+* \evensidemargin=-1.1381pt
+* \topmargin=-39.36449pt
 * \headheight=15.0pt
 * \headsep=12.0pt
 * \topskip=12.0pt
@@ -891,7 +891,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
 Here is how much of TeX's memory you used:
  10758 strings out of 492452
  153220 string characters out of 3120530
- 299731 words of memory out of 3000000
+ 299724 words of memory out of 3000000
  14844 multiletter control sequences out of 15000+200000
  26568 words of font info for 44 fonts, out of 3000000 for 9000
  1142 hyphenation exceptions out of 8191
@@ -900,7 +900,7 @@ Here is how much of TeX's memory you used:
  2.9/fonts/enc/dvips/base/8r.enc}<C:/Users/tsto/AppData/Local/Programs/MiKTeX 2
 .9/fonts/type1/urw/times/utmr8a.pfb><C:/Users/tsto/AppData/Local/Programs/MiKTe
 X 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on documentationMovieRatings.pdf (9 pages, 60651 bytes).
+Output written on documentationMovieRatings.pdf (9 pages, 60733 bytes).
 PDF statistics:
  59 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

@@ -1,4 +1,4 @@
-module dbconn.com
+module savetrends.com
 
 go 1.16
 

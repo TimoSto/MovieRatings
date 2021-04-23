@@ -4,7 +4,6 @@ import (
 	TMDb "dbconn.com/apiClient"
 	MySQL "dbconn.com/sqlClient"
 	"fmt"
-	"time"
 )
 
 var apiClient TMDb.APIClient
@@ -19,9 +18,13 @@ func main() {
 	sqlClient = MySQL.SQLClient{}
 	sqlClient.EstablishConnectionToDB()
 
-	tn := time.Now().UTC()
-	fmt.Println(tn)
-	_, weekNr := tn.ISOWeek()
+	person := apiClient.GetPersonByID(28846)
+	//sqlP := sqlClient.GetPersonByID(24)
+	fmt.Println(person.Birthday)
+
+	//tn := time.Now().UTC()
+	//fmt.Println(tn)
+	//_, weekNr := tn.ISOWeek()
 
 	movieTrends := apiClient.GetMovieTrends()
 
@@ -30,23 +33,23 @@ func main() {
 
 	sqlClient.ExtendOrUpdateMovieTable(movies)
 
-	sqlClient.WriteMovieTrendsToSQL(movieTrends, weekNr)
+	//sqlClient.WriteMovieTrendsToSQL(movieTrends, weekNr)
 
-	tvTrends := apiClient.GetTVTrends()
-
-	series := apiClient.GetSeries(tvTrends)
-
-	sqlClient.ExtendOrUpdateTVTable(series)
-
-	sqlClient.WriteTVTrendsToSQL(tvTrends, weekNr)
-
-	personTrends := apiClient.GetPersonTrends()
-
-	persons := apiClient.GetPersons(personTrends)
-
-	sqlClient.ExtendOrUpdatePersonTable(persons)
-
-	sqlClient.WritePersonTrendsToSQL(personTrends, weekNr)
+	//tvTrends := apiClient.GetTVTrends()
+	//
+	//series := apiClient.GetSeries(tvTrends)
+	//
+	//sqlClient.ExtendOrUpdateTVTable(series)
+	//
+	//sqlClient.WriteTVTrendsToSQL(tvTrends, weekNr)
+	//
+	//personTrends := apiClient.GetPersonTrends()
+	//
+	//persons := apiClient.GetPersons(personTrends)
+	//
+	//sqlClient.ExtendOrUpdatePersonTable(persons)
+	//
+	//sqlClient.WritePersonTrendsToSQL(personTrends, weekNr)
 
 
 	defer sqlClient.DB.Close()

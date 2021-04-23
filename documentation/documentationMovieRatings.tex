@@ -3,7 +3,7 @@
 %Allgemeine Einstellungen
 
 %Abstände
-\usepackage[a4paper,left=3cm,right=3cm,top=3cm,bottom=3.5cm,headsep=12pt,footskip=24pt]{geometry}%Bottom extra 0.5cm für Footer
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=2cm,bottom=3.5cm,headsep=12pt,footskip=24pt]{geometry}%Bottom extra 0.5cm für Footer
 
 %Deutsches Sprachpacket
 \usepackage[german,ngerman]{babel}
@@ -106,8 +106,7 @@ Die verwendeten Daten stammen von der TMDb-API. Dies ist eine REST-API, über we
 \begin{center}
 GET \textit{https://api.themoviedb.org/3/movie/popular?api{\_}key=<api{\_}key>}
 \end{center}
-Die TMDb-API liefert auf einen solchen Request ein JSON-Objekt aus. In diesem Fall beinhaltet diese Antwort die 20 
-aktuell populärsten Filme.
+Der \textit{api{\_}key} ist für jeden Account unterschiedlich. Die TMDb-API liefert auf einen solchen Request ein JSON-Objekt aus. In diesem Fall beinhaltet diese Antwort die 20 aktuell populärsten Filme.
 \part{Dashboard}
 
 \end{document}

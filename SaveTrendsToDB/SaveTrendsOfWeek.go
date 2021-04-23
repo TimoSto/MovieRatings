@@ -29,11 +29,15 @@ func main() {
 
 	sqlClient.ExtendCountriesTable(countries)
 
-	providers := apiClient.GetStreamingProvidersForMovieTrends(&movieTrends)
+	fmt.Println(movieTrends[1].WatchProviders)
+
+	providers := apiClient.GetStreamingProvidersForMovieTrends(movieTrends)
+
+	sqlClient.ExtendProviderTable(providers)
 
 	fmt.Println(providers)
 
-	fmt.Println(movieTrends[0].WatchProviders)
+	fmt.Println(movieTrends[1].WatchProviders)
 
 	defer sqlClient.DB.Close()
 }

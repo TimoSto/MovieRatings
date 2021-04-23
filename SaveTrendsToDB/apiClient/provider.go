@@ -7,11 +7,6 @@ import (
 	"net/http"
 )
 
-type StreamingProvider struct {
-	Provider_id int `json:provider_id`
-	Provider_name string `json:provider_name`
-}
-
 type Provider struct {
 	Provider_id int `json:provider_id`
 	Provider_name string `json:provider_name`
@@ -32,23 +27,28 @@ type StreamingProvidersResultSet struct {
 	Results StreamingProviderResults `json:results`
 }
 
-func(client *APIClient)GetStreamingProvidersForMovieTrends(trends *[]Movie) []Provider{
+type MovieProviders struct {
+	movieID int
+	Providers ProviderResultSetDE
+}
+
+func(client *APIClient)GetStreamingProvidersForMovieTrends(trends []Movie) ([]Provider){
 	var providers []Provider
 
-	for _,movie := range *trends {
-		provider := client.GetStreamingProvidersForMovie(movie.ID)
-		movie.WatchProviders = provider
-		for _,p := range provider.Rent {
+	for _,movie := range trends {
+
+		//movie.WatchProviders = provider
+		for _,p := range movie.WatchProviders.Rent {
 			if findProviderInSlice(providers, p.Provider_id) < 0 {
 				providers = append(providers, p)
 			}
 		}
-		for _,p := range provider.Buy {
+		for _,p := range movie.WatchProviders.Buy {
 			if findProviderInSlice(providers, p.Provider_id) < 0 {
 				providers = append(providers, p)
 			}
 		}
-		for _,p := range provider.Flatrate {
+		for _,p := range movie.WatchProviders.Flatrate {
 			if findProviderInSlice(providers, p.Provider_id) < 0 {
 				providers = append(providers, p)
 			}

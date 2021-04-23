@@ -68,3 +68,39 @@ func(client *SQLClient)UpdatePersonEntry(person apiClient.Person, sqlperson Pers
 		}
 	}
 }
+
+func(client *SQLClient) WritePersonTrendsToSQL(trends []apiClient.Person) {
+	fmt.Println("Write Person-Trends to database...")
+	for _, person := range trends {
+
+		if client.CheckIfPersonTrendEntryExist(person, apiClient.WeekNr) == false {
+			client.WritePersonTrendToSQL(person, apiClient.WeekNr)
+		}
+	}
+}
+
+func(client *SQLClient) CheckIfPersonTrendEntryExist(trend apiClient.Person, weekNr int) bool{
+	sqlstr := fmt.Sprintf("SELECT personId FROM PersonWeek WHERE personId=%v AND weekNr=%v", trend.ID, weekNr)
+	row := client.DB.QueryRow(sqlstr)
+	var found_id int
+	err := row.Scan(&found_id)
+
+	if err == sql.ErrNoRows {
+		return false
+	}
+	if err != nil {
+		panic(err)
+	}
+	return true
+}
+
+func(client *SQLClient) WritePersonTrendToSQL(person apiClient.Person, weekNr int) {
+	fmt.Println("Create PersonTrend Entry", person.Name, weekNr)
+	sql := fmt.Sprintf("INSERT INTO PersonWeek(personId, weekNr) VALUES (%v, %v)", person.ID, weekNr)
+	_, err := client.Exec(sql)
+	if err != nil {
+		panic(err)
+	}
+	//fmt.Println(res)
+	//WriteSQLToFile(sql)
+}

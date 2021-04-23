@@ -27,6 +27,15 @@ type PersonJob struct {
 	Character string `json:character`
 }
 
+type PersonRedux struct {
+	ID                   int     `json:id`
+}
+
+type TrendResultPerson struct {
+	Page          int `json:page`
+	Results       []PersonRedux `json:results`
+}
+
 func (client *APIClient)GetPersonObjects(movies []Movie) []Person {
 	var persons []Person
 	fmt.Print("Anaysing Person-Informations")
@@ -98,4 +107,42 @@ func(client *APIClient)GetPersonByID(id int) Person {
 	}
 
 	return person
+}
+
+func(client *APIClient)GetPersonTrends() []PersonRedux{
+	fmt.Println("Retrieving Person-Trend information from TMDb-Api...")
+	var persons []PersonRedux
+	for i:=1 ; i <=5 ; i++ {
+		persons = append(persons, client.GetPersonTrendPage(i)...)
+	}
+	return persons
+}
+
+func(client *APIClient)GetPersonTrendPage(n int) []PersonRedux{
+	resp, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/person/popular?api_key=%v&page=%v", client.APIKey, n))
+	if err != nil {
+		panic(err)
+	}
+	res, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	var trendingResultSet TrendResultPerson
+	err = json.Unmarshal(res,&trendingResultSet)
+	if err != nil {
+		panic(err)
+	}
+
+	return trendingResultSet.Results
+}
+
+func(client *APIClient)GetPersons(ids []PersonRedux) []Person{
+	var persons []Person
+	fmt.Print("Analysing Person-Trends")
+	for _,id := range ids {
+		fmt.Print(".")
+		persons = append(persons, client.GetPersonByID(id.ID))
+	}
+
+	return persons
 }

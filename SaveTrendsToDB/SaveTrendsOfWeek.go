@@ -68,9 +68,19 @@ func main() {
 
 	sqlClient.ExtendNetworkTable(networks)
 
+	//Serien und TV-Trends
 	sqlClient.ExtendOrUpdateTVTable(seriesTrends)
 
 	sqlClient.ExtendTVTrends(seriesTrends)
+
+	//Über API die populären PErsonen ziehen
+	personTrends := apiClient.GetPersonTrends()
+
+	persons = apiClient.GetPersons(personTrends)
+
+	sqlClient.ExtendOrUpdatePersonTable(persons)
+
+	sqlClient.WritePersonTrendsToSQL(persons)
 
 	defer sqlClient.DB.Close()
 }

@@ -4,10 +4,12 @@ ENV GOOS=windows
 
 ENV GOARCH=amd64
 
-ADD ./SaveTrendsToDB ./saveTrendsToDB
+ADD ./saveTrendsToDB ./saveTrendsToDB
 
-WORKDIR ./SaveTrendsToDB
+WORKDIR ./saveTrendsToDB
 
 RUN go mod tidy
 
 RUN go build SaveTrendsOfWeek.go
+
+RUN mv /go/saveTrendsToDB/SaveTrendsOfWeek.exe /tmp

@@ -84,9 +84,13 @@ func(client *APIClient)GetMovieByID(id int) Movie {
 	credits := client.GetCreditsForMovie(movie.ID)
 	if len(credits.Crew) > 8 {
 		movie.Crew = credits.Crew[:8]
+	} else {
+		movie.Crew = credits.Crew
 	}
 	if len(credits.Cast) > 8 {
 		movie.Cast = credits.Cast[:8]
+	} else {
+		movie.Cast = credits.Cast
 	}
 	providers := client.GetStreamingProvidersForMovie(movie.ID)
 	movie.WatchProviders = providers

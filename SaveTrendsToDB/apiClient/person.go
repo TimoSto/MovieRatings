@@ -49,6 +49,28 @@ func (client *APIClient)GetPersonObjects(movies []Movie) []Person {
 	return persons
 }
 
+func (client *APIClient)GetPersonObjectsTV(series []Series) []Person {
+	var persons []Person
+	fmt.Println("personen")
+	for _, serie := range series {
+		//Cast zur Personen-Liste hinzufügen, falls noch nicht vorhanden
+		for _,cast := range serie.Cast {
+			if findPersonInSlice(persons, cast.ID) == -1 {
+				newPerson := client.GetPersonByID(cast.ID)
+				persons = append(persons, newPerson)
+			}
+		}
+		for _, crew := range serie.Crew {
+			if findPersonInSlice(persons, crew.ID) == -1 {
+				newPerson := client.GetPersonByID(crew.ID)
+				persons = append(persons, newPerson)
+			}
+		}
+	}
+
+	return persons
+}
+
 func findPersonInSlice(arr []Person, id int) int {
 	for i,p := range arr {
 		if p.ID == id {

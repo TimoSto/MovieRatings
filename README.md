@@ -15,7 +15,10 @@ Um diese Frage zu beantworten, können mit dieser Dashboard-Anwendung die Anzahl
 - mySQL-Server
 - Golang oder Docker (wenn die Anwendung neu gebaut werden soll, sonst kann die EXE verwendet werden)
 ## Datenbank
-Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (out/SaveTrendsOfWeek.exe) geschrieben in Golang verwendet. Dieses erledigt folgende Aufgaben:
+### Setup
+Um die Datenbank aufzusetzen muss zunächst das SQL-Script `database/STARTUP_DB.sql` z.B. in der Workbench eines MySQL-Servers ausgeführt werden. Dies erzeugt die DB `movieratings`. Dann werden mit dem Skript `database/CREATE_DB.sql` die notwendigen Tabellen angelegt. Um die bisher abgerufenen Daten in diese Tabellen zu schreiben, kann das Skript `database/FILLDB.sql` verwendet werden.
+### Transfer der Daten von der API in MySQL
+Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (`out/SaveTrendsOfWeek.exe`) geschrieben in Golang (`saveTrendsToDB/SaveTrendsOfWeek.go`) verwendet. Dieses erledigt folgende Aufgaben:
 - Die ersten 100 Filme aus den TMDb-Trends der aktuellen Woche ermitteln
 - Ggf. die Einträge in der Movies-Tabelle ergänzen
 - Ggf. werden die Einträge in der Genres-Tabelle ergänzt
@@ -36,11 +39,12 @@ Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (out/SaveTre
 - Ggf. Countries-Tabelle ergänzen
 - Ggf. SeriesCountry-Tabelle ergänzen
 - Ggf. Provider-Einträge ergänzen
-- Ggf. Series-Provider-Einträge ergänzen
+- Ggf. Series-Provider-Einträge ergänzen 
+- Ggf. Network-Einträge ergänzen
+- Ggf. Series-Network-Einträge ergänzen  
 - GGf. die Einträge in der SeriesWeekPopularity-Tabelle ergänzen
 - Die beliebten Personen werden in der Personen-Tabelle ergänz
 - Ggf. wird die PersonWeek-Tabelle ergänzt
-Die SQL-Befehle werden in die Datei `FILLDB.sql` geschrieben, sodass der selbe Datenbank-Zustand erreicht werden kann, wenn man diese Datei ausführt.
+Die SQL-Befehle werden in die Datei `FILLDB.sql` geschrieben, sodass der selbe Datenbank-Zustand erreicht werden kann, wenn man diese Datei im Kontext der Datenbank ausführt.
 ### Bauen der DB-Anwendung
-Die Anwendung kann entweder direkt gebaut/gestartet werden, wenn man lokal Golang installiert hat, oder in Docker. Dafür wird über die Batch-Datei `buildExeInDockerAndExtractIt.bat` ein Linux-Image gebaut, in welchem die EXE liegt. Dann wird ein Container mit diesem Image gestartet und die EXE wird auf den lokalen Rechner kopiert. Die EXE liegt dann im Out-Verzeichnis und kann von dort gestartet werden.
-Test
+Die Anwendung kann entweder direkt gebaut/gestartet werden, wenn man lokal Golang installiert hat, oder in Docker. Dafür wird über die Batch-Datei `build.bat` ein Linux-Image gebaut, in welchem die EXE liegt. Dann wird ein Container mit diesem Image gestartet und die EXE wird auf den lokalen Rechner kopiert. Die EXE liegt dann im Out-Verzeichnis und kann von dort gestartet werden.

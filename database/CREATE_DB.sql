@@ -156,6 +156,7 @@ CREATE TABLE Personen (
 CREATE TABLE PersonWeek (
 	personId INT NOT NULL,
     weekNr int NOT NULL,
+    popularity float,
     PRIMARY KEY (personId, weekNr),
     FOREIGN KEY (personID) REFERENCES Personen(id)
 );

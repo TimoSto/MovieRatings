@@ -19,8 +19,13 @@ Um diese Frage zu beantworten, können mit dieser Dashboard-Anwendung die Anzahl
 Ein ERD ist unter `database/ERD.png` zu finden
 ### Setup
 Um die Datenbank aufzusetzen muss zunächst das SQL-Script `database/STARTUP_DB.sql` z.B. in der Workbench eines MySQL-Servers ausgeführt werden. Dies erzeugt die DB `movieratings`. Dann werden mit dem Skript `database/CREATE_DB.sql` die notwendigen Tabellen angelegt. Um die bisher abgerufenen Daten in diese Tabellen zu schreiben, kann das Skript `database/FILLDB.sql` verwendet werden.
+### Datenquellen
+Die Daten zu den Filmen, Serien und Personen kommen von der TMDb-API ([https://developers.themoviedb.org/3/getting-started/introduction](https://developers.themoviedb.org/3/getting-started/introduction)). Mit einem API-Key können die einzelnen Informationen und Daten abgerufen werden.
+
+Die Daten zu den Covid-Zahlen kommen von folgender Open-API: [https://covid19-germany.appspot.com](https://covid19-germany.appspot.com). Genauer werden wöchentlich die aktuellen Zahlen abgerufen und gespeichert ([https://covid19-germany.appspot.com/now](https://covid19-germany.appspot.com/now)).
 ### Transfer der Daten von der API in MySQL
 Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (`out/SaveTrendsOfWeek.exe`) geschrieben in Golang (`saveTrendsToDB/SaveTrendsOfWeek.go`) verwendet. Dieses erledigt folgende Aufgaben:
+- Die aktuellen Corona-Zahlen (Fälle, Tode, Genesene) von Open-API ziehen
 - Die ersten 100 Filme aus den TMDb-Trends der aktuellen Woche ermitteln
 - Ggf. die Einträge in der Movies-Tabelle ergänzen
 - Ggf. werden die Einträge in der Genres-Tabelle ergänzt

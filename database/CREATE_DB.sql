@@ -20,6 +20,14 @@ DROP TABLE IF EXISTS Movies;
 DROP TABLE IF EXISTS Providers;
 DROP TABLE IF EXISTS Networks;
 DROP TABLE IF EXISTS Countries;
+DROP TABLE IF EXISTS Covid;
+
+CREATE TABLE Covid (
+	weekNr INT NOT NULL PRIMARY KEY,
+    cases INT,
+    deaths INT,
+    recovered INT
+);
 
 CREATE TABLE Countries (
 	id VARCHAR(10) PRIMARY KEY NOT NULL,

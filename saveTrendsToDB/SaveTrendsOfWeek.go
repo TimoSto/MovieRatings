@@ -19,6 +19,10 @@ func main() {
 	sqlClient := MySQL.SQLClient{}
 	sqlClient.EstablishConnectionToDB()
 
+	covidStats := apiClient.GetCovidStats()
+
+	sqlClient.ExtendOfUpdateCovidTable(covidStats)
+
 	//Zunächst werden die Film-Trends ermittelt (dazu werden erst die Trends abgerufen und dann nochmal die Infos zu jedem Film in den Trends einzeln)
 	movieTrends := apiClient.GetMovieTrends()
 

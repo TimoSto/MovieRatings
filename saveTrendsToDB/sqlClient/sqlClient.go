@@ -13,6 +13,12 @@ type SQLClient struct {
 	DB *sql.DB
 }
 
+type Config struct {
+	MySqlUser string
+	MySqlPassword string
+	MySqlPort string
+}
+
 func(client *SQLClient)Exec(sqlstr string) (sql.Result,error) {
 	res, err := client.DB.Exec(sqlstr)
 	if err == nil {
@@ -41,10 +47,10 @@ func WriteSQLToFile(sqlstr string){
 	}
 }
 
-func(client *SQLClient)EstablishConnectionToDB() {
+func(client *SQLClient)EstablishConnectionToDB(config Config) {
 	fmt.Println("Trying to connect to to mySQL-DB...")
 	var err error
-	client.DB, err = sql.Open("mysql", "root:Pa$$w0rd@tcp(127.0.0.1:3306)/movieratings")
+	client.DB, err = sql.Open("mysql", fmt.Sprintf("%v:%v@tcp(%v)/movieratings", config.MySqlUser, config.MySqlPassword, config.MySqlPort))
 	if err != nil {
 		panic(err)
 	}

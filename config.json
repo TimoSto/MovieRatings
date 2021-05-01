@@ -1,3 +1,5 @@
 {
-  "APIKEY": "b97e33a6b0c4283466ad23df952ebd6a"
+  "MySqlUser": "root",
+  "MySqlPassword": "Pa$$w0rd",
+  "MySqlPort": "127.0.0.1:3306"
 }

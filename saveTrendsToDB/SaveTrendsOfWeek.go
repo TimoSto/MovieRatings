@@ -1,11 +1,27 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	TMDb "savetrends.com/apiClient"
 	MySQL "savetrends.com/sqlClient"
 	"time"
 )
+
+func readConfig() MySQL.Config{
+	file, err := ioutil.ReadFile("../config.json")
+
+	if err != nil {
+		panic(err)
+	}
+	var conf MySQL.Config
+	err = json.Unmarshal(file, &conf)
+	if err != nil {
+		panic(err)
+	}
+	return conf
+}
 
 func main() {
 	apiClient := TMDb.APIClient{
@@ -17,7 +33,8 @@ func main() {
 	_,TMDb.WeekNr = tn.ISOWeek()
 
 	sqlClient := MySQL.SQLClient{}
-	sqlClient.EstablishConnectionToDB()
+	conf := readConfig()
+	sqlClient.EstablishConnectionToDB(conf)
 
 	covidStats := apiClient.GetCovidStats()
 

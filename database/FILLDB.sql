@@ -1,4 +1,4 @@
-INSERT INTO Covid VALUES(15, 3155555, 81111, 2775555)
+INSERT INTO Covid VALUES(15, 3155555, 81111, 2775555);
 INSERT INTO Covid VALUES(16, 3277853, 82149, 2881902);
 INSERT INTO Personen(id, name, birthday, deathday, popularity, profilePath, gender, profession) VALUES(28846,'Alexander Skarsgård','1976-08-25','',8.889,'/hIuDik6KDmHLrqZWxBVdXzUw1kq.jpg',2,'Acting');
 INSERT INTO Personen(id, name, birthday, deathday, popularity, profilePath, gender, profession) VALUES(1356210,'Millie Bobby Brown','2004-02-19','',25.595,'/yzfxLMcBMusKzZp9f1Z9Ags8WML.jpg',1,'Acting');

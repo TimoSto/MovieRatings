@@ -21,6 +21,7 @@ Ein ERD ist unter `database/ERD.png` zu finden
 Um die Datenbank aufzusetzen muss zunächst das SQL-Script `database/STARTUP_DB.sql` z.B. in der Workbench eines MySQL-Servers ausgeführt werden. Dies erzeugt die DB `movieratings`. Dann werden mit dem Skript `database/CREATE_DB.sql` die notwendigen Tabellen angelegt. Um die bisher abgerufenen Daten in diese Tabellen zu schreiben, kann das Skript `database/FILLDB.sql` verwendet werden.
 ### Zugangsdaten zu mySQL
 Die Zugangsdaten zum (lokalen) MySQL-Server befinden sich in der `config.json`. Hier können sie ggf. angepasst werden.
+> Nur relevant, wenn `SaveTrendsOfWeek.exe` verwendet wird
 ### Datenquellen
 Die Daten zu den Filmen, Serien und Personen kommen von der TMDb-API ([https://developers.themoviedb.org/3/getting-started/introduction](https://developers.themoviedb.org/3/getting-started/introduction)). Mit einem API-Key können die einzelnen Informationen und Daten abgerufen werden.
 

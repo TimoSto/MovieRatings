@@ -41,3 +41,47 @@ inner join seriesgenre as sg on s.id = sg.seriesId
 inner join genres as g on g.id = sg.genreId
 where swp.popularity = (Select max(swp2.popularity) from seriesweekpopularity as swp2 where swp2.weekNr = swp.weekNr)
 group by swp.weekNr
+
+/*Popularität der Film-Genres jede Woche*/
+select mwp.weekNr, sum(mwp.popularity) as Popularität, count(*) as AnzahlTrends, mg.genreId, g.genre as Genre from movieweekpopularity as mwp
+inner join movies as m on m.id = mwp.movieId
+inner join moviegenre as mg on mg.movieId = m.id
+inner join genres as g on g.id = mg.genreId
+group by mwp.weekNr, g.id
+order by mwp.weekNr asc, sum(mwp.popularity) desc
+
+/*Popularität der Serien-Genres jede Woche*/
+select swp.weekNr, sum(swp.popularity), count(*), mg.genreId, g.genre from seriesweekpopularity as swp
+inner join series as s on s.id = swp.seriesId
+inner join seriesgenre as mg on mg.seriesId = s.id
+inner join genres as g on g.id = mg.genreId
+group by swp.weekNr, g.id
+order by swp.weekNr asc, sum(swp.popularity) desc
+
+/*Gender-Verteilung in Film-Trends*/
+select mwp.weekNr, count(*), p.gender from movieweekpopularity as mwp
+inner join moviecredits as mc on mc.movieId = mwp.movieId
+inner join personen as p on p.id = mc.personId
+group by mwp.weekNr, p.gender
+order by mwp.weekNr asc
+
+/*Gender-Verteilung in Serien-Trends*/
+select swp.weekNr, count(*), p.gender from seriesweekpopularity as swp
+inner join seriescredits as mc on mc.seriesId = swp.seriesId
+inner join personen as p on p.id = mc.personId
+group by swp.weekNr, p.gender
+order by swp.weekNr asc
+
+/*Verteilung der Film-Trends auf die Länder*/
+select mwp.weekNr, count(*) as AnzahlTrends, c.cname as Land, c.id as ISO_ID from movieweekpopularity as mwp
+inner join moviecountry as mc on mc.movieId = mwp.movieId
+inner join countries as c on c.id = mc.countryId
+group by mwp.weekNr, c.id
+order by mwp.weekNr asc
+
+/*Verteilung der Seiren-Trends auf die Länder*/
+select swp.weekNr, count(*) as AnzahlTrends, c.cname as Land, c.id as ISO_ID from seriesweekpopularity as swp
+inner join seriescountry as sc on sc.seriesId = swp.seriesId
+inner join countries as c on c.id = sc.countryId
+group by swp.weekNr, c.id
+order by swp.weekNr asc

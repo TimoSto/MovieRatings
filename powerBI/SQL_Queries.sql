@@ -85,3 +85,10 @@ inner join seriescountry as sc on sc.seriesId = swp.seriesId
 inner join countries as c on c.id = sc.countryId
 group by swp.weekNr, c.id
 order by swp.weekNr asc
+
+/*Covid-Zahlen als String in Tsd.-Einheiten*/
+select weekNr, 
+concat(round((cases-LAG(cases) OVER (ORDER BY weekNr ASC))/1000, 1), " Tsd.") as cases, 
+convert(deaths-LAG(deaths) OVER (ORDER BY weekNr ASC), char) as deaths, 
+concat(round((recovered-LAG(recovered) OVER (ORDER BY weekNr ASC))/1000, 1), " Tsd.") as recovered 
+from covid

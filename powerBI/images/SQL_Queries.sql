@@ -92,3 +92,10 @@ concat(round((cases-LAG(cases) OVER (ORDER BY weekNr ASC))/1000, 1), " Tsd.") as
 convert(deaths-LAG(deaths) OVER (ORDER BY weekNr ASC), char) as deaths, 
 concat(round((recovered-LAG(recovered) OVER (ORDER BY weekNr ASC))/1000, 1), " Tsd.") as recovered 
 from covid
+
+/*Trends pro Woche und Land*/
+select mwp.weekNr, mwp.popularity, m.title, c.cname as Land, c.id as ISO_ID from movieweekpopularity as mwp
+inner join movies as m on m.id = mwp.movieId
+inner join moviecountry as mc on mc.movieId = mwp.movieId
+inner join countries as c on c.id = mc.countryId
+order by mwp.weekNr asc, ISO_ID

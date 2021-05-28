@@ -99,3 +99,13 @@ inner join movies as m on m.id = mwp.movieId
 inner join moviecountry as mc on mc.movieId = mwp.movieId
 inner join countries as c on c.id = mc.countryId
 order by mwp.weekNr asc, ISO_ID
+
+/*Trends-Country-Week*/
+SELECT movies.title, moviecountry.countryId, countries.cname, movieweekpopularity.weekNr, movieweekpopularity.movieId, movieweekpopularity.popularity, sub.AnzahlTrends FROM movies INNER JOIN moviecountry ON movies.id = moviecountry.movieId INNER JOIN countries ON countries.id = moviecountry.countryId 
+INNER JOIN movieweekpopularity ON movieweekpopularity.movieId = movies.id 
+left join (select mwp.weekNr, count(*) as AnzahlTrends, c.cname as Land, c.id as ISO_ID, mwp.movieId from movieweekpopularity as mwp
+inner join moviecountry as mc on mc.movieId = mwp.movieId
+inner join countries as c on c.id = mc.countryId
+group by mwp.weekNr, c.id
+order by mwp.weekNr asc) as sub on moviecountry.countryId = sub.ISO_ID and sub.weekNr = movieweekpopularity.weekNr and sub.movieId = movieweekpopularity.movieId
+ORDER BY cname, movieweekpopularity.weekNr, movieweekpopularity.popularity

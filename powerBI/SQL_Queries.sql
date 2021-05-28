@@ -139,3 +139,58 @@ inner join personen as p on p.id = pw.personId
 where pw.popularity = (Select max(pw2.popularity) from personweek as pw2 inner join personen as p2 on p2.id = pw2.personId where pw2.weekNr = pw.weekNr and gender = 2 and pw.weekNr = pw0.weekNr)
 order by pw.weekNr asc, pw.popularity desc)
 order by pw0.weekNr asc, p.gender desc
+
+/*Alter in Serien-Trends*/
+select swp.weekNr, count(*) as InSeries,
+case when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 80 then '80<'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 70 then '70-79'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 60 then '60-69'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 50 then '50-59'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 40 then '40-49'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 30 then '30-39'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 20 then '20-29'
+else '0-19'
+ end as agegroups
+from seriesweekpopularity as swp
+inner join series as s on s.id = swp.seriesId
+inner join seriescredits as sc on sc.seriesId = s.id
+inner join personen as p on p.id = sc.personId
+where p.birthday != ''
+group by swp.weekNr, agegroups
+order by swp.weekNr
+
+/*Altersgruppen über alle Trends*/
+select mag.weekNr, sag.weekNr, mag.count, sag.InSeries, mag.agegroups from (select mwp.weekNr, count(*) as count,
+case when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 80 then '80<'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 70 then '70-79'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 60 then '60-69'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 50 then '50-59'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 40 then '40-49'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 30 then '30-39'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 20 then '20-29'
+else '0-19'
+ end as agegroups
+from movieweekpopularity as mwp
+inner join movies as m on m.id = mwp.movieId
+inner join moviecredits as mc on mc.movieId = m.id
+inner join personen as p on p.id = mc.personId
+where p.birthday != ''
+group by mwp.weekNr, agegroups
+order by mwp.weekNr) as mag
+inner join (select swp.weekNr, count(*) as InSeries,
+case when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 80 then '80<'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 70 then '70-79'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 60 then '60-69'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 50 then '50-59'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 40 then '40-49'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 30 then '30-39'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( s.firstAir, '%Y-%m-%d')) >= 20 then '20-29'
+else '0-19'
+ end as agegroups
+from seriesweekpopularity as swp
+inner join series as s on s.id = swp.seriesId
+inner join seriescredits as sc on sc.seriesId = s.id
+inner join personen as p on p.id = sc.personId
+where p.birthday != ''
+group by swp.weekNr, agegroups
+order by swp.weekNr) as sag on sag.weekNr = mag.weekNr and sag.agegroups = mag.agegroups

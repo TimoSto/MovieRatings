@@ -109,3 +109,33 @@ inner join countries as c on c.id = mc.countryId
 group by mwp.weekNr, c.id
 order by mwp.weekNr asc) as sub on moviecountry.countryId = sub.ISO_ID and sub.weekNr = movieweekpopularity.weekNr and sub.movieId = movieweekpopularity.movieId
 ORDER BY cname, movieweekpopularity.weekNr, movieweekpopularity.popularity
+
+/*Alter in Movie-Trends*/
+select mwp.weekNr, count(*),
+case when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 80 then '>80'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 70 then '70-79'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 60 then '60-69'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 50 then '50-59'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 40 then '40-49'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 30 then '30-39'
+when timestampdiff(YEAR,STR_TO_DATE( p.birthday, '%Y-%m-%d'), STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) >= 20 then '20-29'
+else '0-19'
+ end as agegroups
+from movieweekpopularity as mwp
+inner join movies as m on m.id = mwp.movieId
+inner join moviecredits as mc on mc.movieId = m.id
+inner join personen as p on p.id = mc.personId
+where p.birthday != ''
+group by mwp.weekNr, agegroups
+order by mwp.weekNr
+/*Beliebteste Personen der woche nach Gender*/
+select weekNr, p.gender, p.name from personweek as pw0
+inner join personen as p on p.id = pw0.personId
+where personId in (select p.id from personweek as pw
+inner join personen as p on p.id = pw.personId
+where pw.popularity = (Select max(pw2.popularity) from personweek as pw2 inner join personen as p2 on p2.id = pw2.personId where pw2.weekNr = pw.weekNr and gender = 1 and pw.weekNr = pw0.weekNr)
+order by pw.weekNr asc, pw.popularity desc) or personId in (select p.id from personweek as pw
+inner join personen as p on p.id = pw.personId
+where pw.popularity = (Select max(pw2.popularity) from personweek as pw2 inner join personen as p2 on p2.id = pw2.personId where pw2.weekNr = pw.weekNr and gender = 2 and pw.weekNr = pw0.weekNr)
+order by pw.weekNr asc, pw.popularity desc)
+order by pw0.weekNr asc, p.gender desc

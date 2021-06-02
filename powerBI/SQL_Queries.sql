@@ -194,3 +194,39 @@ inner join personen as p on p.id = sc.personId
 where p.birthday != ''
 group by swp.weekNr, agegroups
 order by swp.weekNr) as sag on sag.weekNr = mag.weekNr and sag.agegroups = mag.agegroups
+
+/*Gender-Verteilung beliebtester Film*/
+select mwp.weekNr, mwp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from movieweekpopularity as mwp
+inner join movies as m on m.id=mwp.movieId
+inner join moviecredits as mc on mc.movieId=mwp.movieId
+inner join personen as p on p.id = mc.personId
+where mwp.popularity = (select max(mwp2.popularity) from movieweekpopularity as mwp2
+group by mwp2.weekNr
+having mwp2.weekNr = mwp.weekNr)
+group by weekNr, p.gender
+order by weekNr, p.gender
+
+/*Gender-Verteilung bei belibtester Serie*/
+select swp.weekNr, swp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from seriesweekpopularity as swp
+inner join series as m on m.id=swp.seriesId
+inner join seriescredits as mc on mc.seriesId=swp.seriesId
+inner join personen as p on p.id = mc.personId
+where swp.popularity = (select max(swp2.popularity) from seriesweekpopularity as swp2
+group by swp2.weekNr
+having swp2.weekNr = swp.weekNr)
+group by weekNr, p.gender
+order by weekNr, p.gender

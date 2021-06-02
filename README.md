@@ -60,4 +60,4 @@ Die SQL-Befehle werden in die Datei `FILLDB.sql` geschrieben, sodass der selbe D
 ### Bauen der DB-Anwendung
 Die Anwendung kann entweder direkt gebaut/gestartet werden, wenn man lokal Golang installiert hat, oder in Docker. Dafür wird über die Batch-Datei `build.bat` ein Linux-Image gebaut, in welchem die EXE liegt. Dann wird ein Container mit diesem Image gestartet und die EXE wird auf den lokalen Rechner kopiert. Die EXE liegt dann im Out-Verzeichnis und kann von dort gestartet werden.
 ## Dokumentation
-Die Dokumentation ist [hier](https://github.com/TimoSto/latexWissenschaftlichesArbeiten/tree/MovieRatings) zu finden
+Die Dokumentation ist [hier](https://github.com/TimoSto/latexWissenschaftlichesArbeiten/tree/MovieRatings/MovieRatingsDoku.pdf) zu finden

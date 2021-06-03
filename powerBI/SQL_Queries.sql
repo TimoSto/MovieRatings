@@ -129,7 +129,11 @@ where p.birthday != ''
 group by mwp.weekNr, agegroups
 order by mwp.weekNr
 /*Beliebteste Personen der woche nach Gender*/
-select weekNr, p.gender, p.name from personweek as pw0
+select weekNr, p.gender, p.name, case
+when p.profession = "Acting" and p.gender = 1 then "Schauspielerin"
+when p.profession = "Acting" then "Schauspieler"
+when p.profession = "Crew" then "Crew"
+end as Job from personweek as pw0
 inner join personen as p on p.id = pw0.personId
 where personId in (select p.id from personweek as pw
 inner join personen as p on p.id = pw.personId

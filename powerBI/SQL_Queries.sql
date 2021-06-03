@@ -207,9 +207,45 @@ from movieweekpopularity as mwp
 inner join movies as m on m.id=mwp.movieId
 inner join moviecredits as mc on mc.movieId=mwp.movieId
 inner join personen as p on p.id = mc.personId
-where mwp.popularity = (select max(mwp2.popularity) from movieweekpopularity as mwp2
-group by mwp2.weekNr
-having mwp2.weekNr = mwp.weekNr)
+where mwp.popularity = (select mwp2.popularity from movieweekpopularity as mwp2
+where mwp2.weekNr = mwp.weekNr
+order by mwp2.popularity desc limit 0,1)
+group by weekNr, p.gender
+order by weekNr, p.gender
+
+/*Gender-Verteilung bei zweitbeliebtestem Film*/
+select mwp.weekNr, mwp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from movieweekpopularity as mwp
+inner join movies as m on m.id=mwp.movieId
+inner join moviecredits as mc on mc.movieId=mwp.movieId
+inner join personen as p on p.id = mc.personId
+where mwp.popularity = (select mwp2.popularity from movieweekpopularity as mwp2
+where mwp2.weekNr = mwp.weekNr
+order by mwp2.popularity desc limit 1,1)
+group by weekNr, p.gender
+order by weekNr, p.gender
+
+/*Genderverteilung bei 3.Film*/
+select mwp.weekNr, mwp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from movieweekpopularity as mwp
+inner join movies as m on m.id=mwp.movieId
+inner join moviecredits as mc on mc.movieId=mwp.movieId
+inner join personen as p on p.id = mc.personId
+where mwp.popularity = (select mwp2.popularity from movieweekpopularity as mwp2
+where mwp2.weekNr = mwp.weekNr
+order by mwp2.popularity desc limit 2,1)
 group by weekNr, p.gender
 order by weekNr, p.gender
 
@@ -225,8 +261,44 @@ from seriesweekpopularity as swp
 inner join series as m on m.id=swp.seriesId
 inner join seriescredits as mc on mc.seriesId=swp.seriesId
 inner join personen as p on p.id = mc.personId
-where swp.popularity = (select max(swp2.popularity) from seriesweekpopularity as swp2
-group by swp2.weekNr
-having swp2.weekNr = swp.weekNr)
+where swp.popularity = (select swp2.popularity from seriesweekpopularity as swp2
+where swp2.weekNr = swp.weekNr
+order by swp2.popularity desc limit 0,1)
+group by weekNr, p.gender
+order by weekNr, p.gender
+
+/*Top2 Series Genders*/
+select swp.weekNr, swp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from seriesweekpopularity as swp
+inner join series as m on m.id=swp.seriesId
+inner join seriescredits as mc on mc.seriesId=swp.seriesId
+inner join personen as p on p.id = mc.personId
+where swp.popularity = (select swp2.popularity from seriesweekpopularity as swp2
+where swp2.weekNr = swp.weekNr
+order by swp2.popularity desc limit 1,1)
+group by weekNr, p.gender
+order by weekNr, p.gender
+
+/*Top3 Series Genders*/
+select swp.weekNr, swp.popularity, m.title, p.gender, count(*), 
+case p.gender
+when 1 then 'weiblich'
+when 2 then 'männlich'
+when 3 then 'divers'
+when 0 then 'unbekannt'
+end as geschlecht
+from seriesweekpopularity as swp
+inner join series as m on m.id=swp.seriesId
+inner join seriescredits as mc on mc.seriesId=swp.seriesId
+inner join personen as p on p.id = mc.personId
+where swp.popularity = (select swp2.popularity from seriesweekpopularity as swp2
+where swp2.weekNr = swp.weekNr
+order by swp2.popularity desc limit 2,1)
 group by weekNr, p.gender
 order by weekNr, p.gender

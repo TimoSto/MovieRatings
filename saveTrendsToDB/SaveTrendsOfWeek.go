@@ -36,9 +36,9 @@ func main() {
 	conf := readConfig()
 	sqlClient.EstablishConnectionToDB(conf)
 
-	covidStats := apiClient.GetCovidStats()
-
-	sqlClient.ExtendOfUpdateCovidTable(covidStats)
+	//covidStats := apiClient.GetCovidStats()
+	//
+	//sqlClient.ExtendOfUpdateCovidTable(covidStats)
 
 	//Zunächst werden die Film-Trends ermittelt (dazu werden erst die Trends abgerufen und dann nochmal die Infos zu jedem Film in den Trends einzeln)
 	movieTrends := apiClient.GetMovieTrends()

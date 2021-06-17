@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS Providers;
 DROP TABLE IF EXISTS Networks;
 DROP TABLE IF EXISTS Countries;
 DROP TABLE IF EXISTS Covid;
+DROP TABLE if exists Wochentag;
 
 CREATE TABLE Covid (
 	weekNr INT NOT NULL PRIMARY KEY,
@@ -207,4 +208,9 @@ CREATE TABLE SeriesProvider (
     PRIMARY KEY (seriesId, provider, service),
     FOREIGN KEY (seriesId) REFERENCES Series(id),
     FOREIGN KEY (provider) REFERENCES Providers(id)
+);
+
+create Table Wochentage (
+	ind int PRIMARY KEY NOT NULL,
+	tag varchar(10)
 );

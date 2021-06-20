@@ -306,3 +306,24 @@ where swp2.weekNr = swp.weekNr
 order by swp2.popularity desc limit 2,1)
 group by weekNr, p.gender
 order by weekNr, p.gender
+/*Release-Tag der Trends pro Woche*/
+select mwp.weekNr,  count(*), WEEKDAY(STR_TO_DATE( m.releaseDate, '%Y-%m-%d')) as wind, wd.tag
+from movieweekpopularity as mwp
+inner join movies as m on m.id = mwp.movieId
+inner join wochentage as wd on ind = WEEKDAY(STR_TO_DATE( m.releaseDate, '%Y-%m-%d'))
+where releaseDate != ""
+group by mwp.weekNr, WEEKDAY(STR_TO_DATE( m.releaseDate, '%Y-%m-%d'))
+order by weekNr asc, count(*) desc
+
+/*Beliebtester Film im Alter zwischen 7 und 15 (auf andere Altersgruppen einfach zu übertragen)*/
+select mwp.weekNr, max(mwp.popularity), IF(m.releaseDate IS NULL, "/", m.releaseDate) as releaseDate, IF(m.title IS NULL, "/", m.title) as title
+from movieweekpopularity as mwp
+left join movies as m on m.id = mwp.movieId
+where timestampdiff(YEAR, STR_TO_DATE( m.releaseDate, '%Y-%m-%d'),CURDATE()) between 7 and 14
+and mwp.popularity = (select mwp2.popularity from movieweekpopularity as mwp2
+inner join movies as m2 on m2.Id = mwp2.movieId
+ where mwp2.weekNr = mwp.weekNr
+ and timestampdiff(YEAR, STR_TO_DATE( m2.releaseDate, '%Y-%m-%d'),CURDATE()) between 7 and 14
+ order by mwp2.popularity desc limit 0,1)
+group by mwp.weekNr
+order by mwp.weekNr

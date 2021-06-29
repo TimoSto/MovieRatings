@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS Providers;
 DROP TABLE IF EXISTS Networks;
 DROP TABLE IF EXISTS Countries;
 DROP TABLE IF EXISTS Covid;
-DROP TABLE if exists Wochentag;
+DROP TABLE if exists Wochentage;
 
 CREATE TABLE Covid (
 	weekNr INT NOT NULL PRIMARY KEY,

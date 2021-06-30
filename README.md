@@ -18,7 +18,7 @@ Um diese Frage zu beantworten, können mit dieser Dashboard-Anwendung die Anzahl
 ### Schema
 Ein ERD ist unter `database/ERD.png` zu finden
 ### Setup
-Um die Datenbank aufzusetzen muss zunächst das SQL-Script `database/STARTUP_DB.sql` z.B. in der Workbench eines MySQL-Servers ausgeführt werden. Dies erzeugt die DB `movieratings`. Dann werden mit dem Skript `database/CREATE_DB.sql` die notwendigen Tabellen angelegt. Um die bisher abgerufenen Daten in diese Tabellen zu schreiben, kann das Skript `database/FILLDB.sql` verwendet werden.
+Um die Datenbank aufzusetzen muss zunächst das SQL-Script `database/STARTUP_DB.sql` z.B. in der Workbench eines MySQL-Servers ausgeführt werden. Dies erzeugt die DB `movieratings`. Dann werden mit dem Skript `database/CREATE_DB.sql` die notwendigen Tabellen angelegt. Um die bisher abgerufenen Daten in diese Tabellen zu schreiben, kann das Skript `database/rebuild.sql` verwendet werden. Bei einer laufenden Datenbank kann `rebuild.sql` über die Kommandozeile generiert werden: `DBHandler.exe --convert`
 ### Zugangsdaten zu mySQL
 Die Zugangsdaten zum (lokalen) MySQL-Server befinden sich in der `config.json`. Hier können sie ggf. angepasst werden.
 > Nur relevant, wenn `SaveTrendsOfWeek.exe` verwendet wird
@@ -26,6 +26,7 @@ Die Zugangsdaten zum (lokalen) MySQL-Server befinden sich in der `config.json`. 
 Die Daten zu den Filmen, Serien und Personen kommen von der TMDb-API ([https://developers.themoviedb.org/3/getting-started/introduction](https://developers.themoviedb.org/3/getting-started/introduction)). Mit einem API-Key können die einzelnen Informationen und Daten abgerufen werden.
 
 Die Daten zu den Covid-Zahlen kommen von folgender Open-API: [https://covid19-germany.appspot.com](https://covid19-germany.appspot.com). Genauer werden wöchentlich die aktuellen Zahlen abgerufen und gespeichert ([https://covid19-germany.appspot.com/now](https://covid19-germany.appspot.com/now)).
+> UPDATE: Die Covid-API ist nicht mehr verfügbar. Die Covid-Zahlen können jetzt über das CMD-Programm out/DBHandler.exe eingetragen werden: `DBHandler.exe --covid week=12 cases=1234567 deaths=3456 recovered=123456`
 ### Transfer der Daten von der API in MySQL
 Um die mySQL-Datenbank zu füllen, wird ein Kommandozeilen-Programm (`out/SaveTrendsOfWeek.exe`) geschrieben in Golang (`saveTrendsToDB/SaveTrendsOfWeek.go`) verwendet. Dieses erledigt folgende Aufgaben:
 - Die aktuellen Corona-Zahlen (Fälle, Tode, Genesene) von Open-API ziehen

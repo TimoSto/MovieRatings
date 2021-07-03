@@ -13,3 +13,7 @@ RUN go mod tidy
 RUN go build SaveTrendsOfWeek.go
 
 RUN mv /go/saveTrendsToDB/SaveTrendsOfWeek.exe /tmp
+
+RUN go build DBHandler.go
+
+RUN mv /go/saveTrendsToDB/DBHandler.exe /tmp
